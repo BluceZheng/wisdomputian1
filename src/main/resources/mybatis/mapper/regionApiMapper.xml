@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.RegionApiMapper">
+
+    <!-- 获取最近位置 -->
+    <select id="SearchNearlyLoad" parameterType="com.haomeng.wisdomputian.bean.Region"
+            resultType="com.haomeng.wisdomputian.bean.Region">
+        SELECT *,
+               ROUND(6378.138 * 2 * ASIN(
+                       SQRT(POW(SIN((lat * PI() / 180 - #{lat} * PI() / 180) / 2), 2)
+                           + COS(lat * PI() / 180) * COS(#{lat} * PI() / 180) *
+                             POW(SIN((lon * PI() / 180 - #{lon} * PI() / 180) / 2), 2)
+                           )
+                   ) * 1000
+                   ) AS distance
+        FROM region
+        ORDER BY distance ASC limit 1
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>分类</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/newsclassifly.css}">
+
+</head>
+<body>
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card layui-row">
+                <div class="layui-card-header">
+                     <span class="layui-breadcrumb">
+                      <a href="javaScript:;">潮闻管理</a>
+                      <a href="javascript:window.location.reload();"><cite>潮闻分类</cite></a>
+                    </span>
+                </div>
+                <div class="layui-card-header layui-inline ">
+                    <a class="layui-btn layui-btn-normal layui-icon"
+                       href="/newsclassfly/add/addnewsclassfly">&#xe654;添加</a>
+                </div>
+
+                <div class="page-wrapper">
+                    <!-- 数据页面 -->
+                    <table class="layui-table" id="newsclassiflyTable" lay-filter="newsclassiflyTable"></table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 表格操作列 -->
+        <script type="text/html" id="newsclassiflyTableBarEdit">
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                layui.use('element', function () {
+
+                });
+
+                //加载页面数据
+                loadnewsClassFly();
+            })
+
+            //确认删除弹窗
+            function delPop(id) {
+                layer.open({
+                    type: 1
+                    ,
+                    title: false //不显示标题栏
+                    ,
+                    closeBtn: false
+                    ,
+                    area: '300px;'
+                    ,
+                    shade: 0.8
+                    ,
+                    id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                    ,
+                    btn: ['确定删除', '还没考虑好']
+                    ,
+                    yes: function (index, layero) {
+                        //确定删除
+                        $.ajax({
+                            url: '/newsclassifly/delete/deletesimplenewsclassfly',
+                            type: "POST",
+                            dataType: "json",
+                            data: {"id": id},
+                            success: function (succdata) {
+                                var erroCode = succdata.erroCode;
+                                var errorMessage = succdata.errorMessage;
+                                layer.msg(errorMessage);
+                                layer.closeAll();
+                                if (erroCode == 200) {
+                                    loadnewsClassFly();
+                                }
+                            },
+                            error: function (errdata) {
+                                console.log(errdata);
+                            }
+                        });
+                    },
+                    btnAlign: 'c'
+                    ,
+                    moveType: 0 //拖拽模式，0或者1
+                    ,
+                    content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">你知道吗？亲！<br>你的操作将不可挽回！<br><br>你确定要删除这条数据<br><br>删除后将没有办法恢复</div>'
+
+                });
+            }
+
+            //页面数据加载
+            function loadnewsClassFly() {
+                var jdata;
+                $.ajax({
+                    type: "POST",
+                    url: "/newsclassifly/obtainAllnewsclassfly",
+                    dataType: "json",
+                    async: false,
+                    success: function (sucdata) {
+                        console.log(sucdata);
+                        var erroCode = sucdata.erroCode;
+                        var errorMessage = sucdata.errorMessage;
+                        if (erroCode != 200) {
+                            layui.msg(errorMessage);
+                            return;
+                        }
+                        jdata = sucdata.backData;
+
+                    },
+                    error: function () {
+                        jdata = []
+                    }
+                });
+                layui.use('table', function () {
+                    var table = layui.table;
+                    table.render({
+                        elem: '#newsclassiflyTable',
+                        data: jdata,
+                        cols: [
+                            [
+                                {field: 'id', title: 'ID', align: 'center', width: 80},
+                                {field: 'title', title: '名称', align: 'center', width: 160},
+                                {field: 'sort', title: '排序', align: 'center', width: 80},
+                                {
+                                    field: 'picture', align: 'center', title: '图片', templet: function (d) {
+                                        return '<div><img class="showimg" src=' + d.picture + '></div>'
+                                    }, width: 180
+                                },
+                                {align: 'center', toolbar: '#newsclassiflyTableBarEdit', title: '操作', width: 120},
+                            ]
+                        ],
+                    });
+                    table.on('tool(newsclassiflyTable)', function (obj) {
+                        var event = obj.event;
+                        var data = obj.data; //得到所在行所有键值
+                        console.log(data);
+                        if (event == 'del') {
+                            delPop(data.id);
+                        } else if (event == 'edit') {
+                            window.location.href = "/newsclassfly/edit/editnewsclassifly?newsclassflyid=" + data.id;
+                        }
+                    });
+                });
+            }
+
+        </script>
+
+</body>
+</html>

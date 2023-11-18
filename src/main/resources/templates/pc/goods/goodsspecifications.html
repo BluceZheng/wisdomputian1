@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加商品规格</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:">产品管理</a>
+                      <a href="javascript:history.back(-1);window.close();">产品</a>
+                      <a href="javascript:window.location.reload();"><cite>规格编辑</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-body">
+
+                    <form class="layui-form" id="specificationform">
+
+                        <!-- 商品id -->
+                        <div class="layui-form-item" style="display: none;">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">商品Id</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input" lay-filter="goodsid"
+                                           id="goodsid" name="goodsid" th:value="${goodsid}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 添加尺寸 -->
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <a class="layui-btn layui-icon layui-icon-addition" type="button" onclick="addsize()">新增尺寸</a>
+                            </div>
+                        </div>
+
+                        <!-- 尺寸 -->
+                        <div class="layui-form-item" id="contentSize">
+
+                        </div>
+
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        layui.use(['form', 'element'], function () {
+            var form = layui.form;
+            form.on('submit(tijiao)', function (data) {
+                $.ajax({
+                    type: "POST"
+                    , dataType: "json"
+                    , url: "/goods/specification/update/updatespecification"
+                    , data: $("#specificationform").serialize()
+                    , success: function (sucdata) {
+                        var erroCode = sucdata.erroCode;
+                        var errorMessage = sucdata.errorMessage;
+                        var backData = sucdata.backData;
+                        layer.msg(errorMessage);
+                        if (erroCode != 200) {
+                            return;
+                        }
+                        setTimeout(function () {
+                            history.back(-1);
+                            window.close();
+                        }, 2000);
+                    }
+                    , error: function (errdata) {
+                        console.log(errdata);
+                    }
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        })
+    });
+
+
+    //获取商品id
+    var goodsid = $("#goodsid").val();
+
+    //获取当前商品的尺寸信息
+    getSize(goodsid);
+
+    //添加尺寸
+    function addsize() {
+        $("#contentSize").append('<div class="layui-inline layui-col-xs">\n' +
+            '                                <input class="layui-input" name="contentsize">\n' +
+            '                                <button class="layui-btn layui-btn-xs" type="button" onclick="$(this).parent().remove();">删除</button>\n' +
+            '                            </div> ');
+    }
+
+    //获取尺寸
+    function getSize(goodsid) {
+        $.ajax({
+            type: "post"
+            , url: "/goods/specification/getGoodsSize"
+            , dataType: "json"
+            , data: {
+                "goodsid": goodsid
+            }
+            , success: function (sucdata) {
+                var erroCode = sucdata.erroCode;
+                var errorMessage = sucdata.errorMessage;
+                if (erroCode != 200) {
+                    layer.msg(errorMessage);
+                    return;
+                }
+                var backData = sucdata.backData;
+                var sizes = backData.contentsize.split(",");
+                var str = "";
+                for (var i = 0; i < sizes.length; i++) {
+                    str += '<div class="layui-inline"><input class="layui-input" name="contentsize" value="' + sizes[i] + '" />'
+                        + '<button class="layui-btn layui-btn-xs" type="button"  onclick="$(this).parent().remove();">删除</button>'
+                        + '</div>';
+                }
+                $("#contentSize").append(str);
+            }
+            , error: function (errdata) {
+                console.log(errdata);
+            }
+
+        })
+    }
+
+</script>
+
+</body>
+</html>

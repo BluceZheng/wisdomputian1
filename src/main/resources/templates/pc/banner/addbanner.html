@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加资讯</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/goods.css}" media="all">
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:">系统管理</a>
+                      <a href="javascript:history.back(-1);window.close();">滑块</a>
+                      <a href="javascript:window.location.reload();"><cite>添加滑块</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-header">
+                </div>
+
+                <div class="layui-card-body">
+                    <form class="layui-form">
+                        <!-- 标题 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标题</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="title" name="title">
+                            </div>
+                        </div>
+
+                        <!-- 链接 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">链接</label>
+                            <div class="layui-input-inline ">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="link" name="link">
+                            </div>
+                        </div>
+
+                        <!-- 排序 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">排序</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="sort" name="sort" value="1000">
+                            </div>
+                        </div>
+
+                        <!-- 状态 -->
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">状态</label>
+                                <div class="layui-input-inline">
+                                    <select id="status" name="status" lay-filter="classflytwo">
+                                        <option value="0">隐藏</option>
+                                        <option value="1">显示</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- banner图片 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">banner图片</label>
+                            <div class="layui-input-block layui-upload" id="reloadMainImg">
+                                <button type="button" class="layui-btn" id="addbannerimg">添加banner图</button>
+                                <button type="button" class="layui-btn layui-btn-primary" style="display: none"
+                                        id="uploadbannerimg">上传图片
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-disabled" style="display: none"
+                                        id="donemainimg">上传成功
+                                </button>
+                            </div>
+                            <label class="layui-form-label"></label>
+                            <div class="layui-upload-list layui-input-block">
+                                <img class="layui-upload-img showviewimgbanner" id="imgshowview">
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item" style="display: none">
+                            <div class="layui-inline" id="pictures"></div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    layui.use(['form', 'layer', 'layedit', 'upload', 'element'], function () {
+        var form = layui.form;
+        form.on('submit(tijiao)', function (data) {
+            console.log(data.field);
+            $.ajax({
+                type: "POST"
+                , dataType: "json"
+                , url: "/banners/addbanner"
+                , data: data.field
+                , success: function (sucdata) {
+                    var erroCode = sucdata.erroCode;
+                    var errorMessage = sucdata.errorMessage;
+                    var backData = sucdata.backData;
+                    layer.msg(errorMessage);
+                    if (erroCode != 200) {
+                        return;
+                    }
+                    setTimeout(function () {
+                        history.back(-1);
+                        window.close();
+                    }, 2000);
+                }
+                , error: function (errdata) {
+                    console.log(errdata);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+    //上传主图
+    layui.use('upload', function () { //独立版的layer无需执行这一句
+        var $ = layui.jquery, upload = layui.upload;
+        //独立版的layer无需执行这一句
+        var num = 1;
+        var uploadInst = upload.render({
+            elem: '#addbannerimg'
+            , url: '/fileUpload' //改成您自己的上传接口
+            , accept: "images"//直接收图片文件
+            , auto: false//选择文件之后不直接上传
+            , bindAction: "#uploadbannerimg"//指定按钮上传
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#imgshowview').attr('src', result); //图片链接（base64）
+                    $("#addbannerimg").text("更换banner图");
+                    $("#uploadbannerimg").css("display", "");
+                    $("#uploadbannerimg").click();
+                });
+            }
+            , done: function (res) {
+                $("#pictures").append('<input type="hidden" autocomplete="off" class="layui-input" id="picture" name="picture" value="' + res.path + '" >');
+                //上传成功
+                $("#addbannerimg").css("display", "none");
+                $("#uploadbannerimg").css("display", "none");
+                $("#donemainimg").css("display", "");
+                layer.msg("成功上传");
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var reloadMainImg = $('#reloadMainImg');
+                reloadMainImg.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                reloadMainImg.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

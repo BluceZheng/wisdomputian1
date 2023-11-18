@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>分类</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/tree/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/tree/layui/layui.js}"></script>
+
+</head>
+<body>
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card layui-row">
+
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:">产品管理</a>
+                      <a href="javascript:window.location.reload();"><cite>产品分类</cite></a>
+                    </span>
+                </div>
+
+
+                <div class="layui-card-header layui-inline ">
+                    <a id="add" class="layui-btn layui-btn-normal layui-icon" href="/classifly/add/addclassifly">&#xe654;添加</a>
+                </div>
+
+                <div class="page-wrapper">
+                    <!-- 数据页面 -->
+                    <table id="classflyTreeTable" class="layui-table" lay-filter="classflyTreeTable"
+                           lay-size="sm"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="classflyTreeTableBarEdit">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    $(document).ready(function () {
+        layui.use('element', function () {
+
+        });
+        //加载页面数据
+        loadClassFly();
+    });
+
+    //确认删除弹窗
+    function delPop(id) {
+        layer.open({
+            type: 1
+            ,
+            title: false //不显示标题栏
+            ,
+            closeBtn: false
+            ,
+            area: '300px;'
+            ,
+            shade: 0.8
+            ,
+            id: 'LAY_layuipro' //设定一个id，防止重复弹出
+            ,
+            btn: ['确定删除', '还没考虑好']
+            ,
+            yes: function (index, layero) {
+                //确定删除
+                $.ajax({
+                    url: '/classifly/deleted/deletedclassifly',
+                    type: "POST",
+                    dataType: "json",
+                    data: {"id": id},
+                    success: function (succdata) {
+                        var errorMessage = succdata.errorMessage;
+                        layer.msg(errorMessage);
+                        layer.closeAll();
+                        loadClassFly();
+                    },
+                    error: function (errdata) {
+                        console.log(errdata);
+                    }
+                });
+            },
+            btnAlign: 'c'
+            ,
+            moveType: 0 //拖拽模式，0或者1
+            ,
+            content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">你知道吗？亲！<br>你的操作将不可挽回！<br><br>你确定要删除这条数据<br><br>删除后将没有办法恢复</div>'
+
+        });
+    }
+
+    //页面数据加载
+    function loadClassFly() {
+        var jdata;
+        $.ajax({
+            type: "POST",
+            url: "/classifly/obtaintreeclassifly",
+            dataType: "json",
+            async: false,
+            success: function (sucdata) {
+                console.log(sucdata);
+                var erroCode = sucdata.erroCode;
+                var errorMessage = sucdata.errorMessage;
+                if (erroCode != 200) {
+                    layui.msg(errorMessage);
+                    return;
+                }
+                jdata = sucdata.backData;
+
+            },
+            error: function () {
+                jdata = []
+            }
+        });
+
+
+        layui.config({
+            base: '/tree/js/',
+        }).use(['layer', 'util', 'treeTable'], function () {
+            var treeTable = layui.treeTable;
+            var insTb = treeTable.render({
+                elem: '#classflyTreeTable',
+                data: jdata,
+                icon_key: 'id',
+                icon: {
+                    open: 'layui-icon layui-icon-down',
+                    close: 'layui-icon layui-icon-triangle-r',
+                    left: 16,
+                },
+                cols: [
+                    {key: 'id', title: 'ID', align: 'center', width: 80},
+                    {key: 'content', title: '名称', align: 'center', width: 160},
+                    {key: 'sort', title: '排序', align: 'center', width: 80},
+                    {
+                        key: 'picture', align: 'center', title: '图片', template: function (d) {
+                            return '<div><img src="/' + d.picture + '"></div>'
+                        }, width: 180
+                    },
+                    {
+                        align: 'center',
+                        title: '操作',
+                        width: 120,
+                        template: function (item) {
+                            return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-filter="edit">修改</a>' +
+                                '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-filter="del">删除</a>';
+                        }
+                    },
+                ]
+            });
+
+            treeTable.on('tree(del)', function (data) {
+                console.log(data);
+                delPop(data.item.id);
+            });
+
+            treeTable.on('tree(edit)', function (data) {
+                console.log(data);
+                window.location.href = "/classifly/edit/editclassifly?classflyId=" + data.item.id;
+            });
+
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.CustAddressMapper">
+
+    <!-- 获取用户地址信息 -->
+    <select id="SearchCustAddressList" parameterType="com.haomeng.wisdomputian.bean.PageParam"
+            resultType="com.haomeng.wisdomputian.bean.CustAddress">
+        select *
+        from custaddress
+        where linkid = #{objid}
+          and isdelete !=1
+        order by isdelete asc limit #{pagestart}, #{pageend}
+    </select>
+
+    <!-- 逻辑删除用户地址信息 -->
+    <update id="LogicDeleteCustAddress" parameterType="com.haomeng.wisdomputian.bean.CustAddress">
+        update custaddress
+        set isdelete = 1
+        where id = #{id}
+    </update>
+
+    <!--   获取全部为删除数量  -->
+    <select id="ObtainUnDeleteSum" resultType="long">
+        select count(id)
+        from custaddress
+        where isdelete != 1
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+

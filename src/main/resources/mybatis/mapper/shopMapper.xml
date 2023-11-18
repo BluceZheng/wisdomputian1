@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.ShopMapper">
+
+    <!-- 获取最近距离的店铺 -->
+    <select id="searchstoredistance" parameterType="com.haomeng.wisdomputian.bean.LongitudeAndLatitude"
+            resultType="com.haomeng.wisdomputian.bean.Shop">
+        SELECT *,
+               ROUND(6378.138 * 2 * ASIN(
+                       SQRT(POW(SIN((40.0497810000 * PI() / 180 - #{latitude} * PI() / 180) / 2), 2)
+                           + COS(40.0497810000 * PI() / 180) * COS(#{latitude} * PI() / 180) *
+                             POW(SIN((116.3424590000 * PI() / 180 - #{longitude} * PI() / 180) / 2), 2)
+                           )
+                   ) * 1000
+                   ) AS distance
+        FROM shop
+        ORDER BY distance ASC
+    </select>
+
+
+    <!--新建店铺-->
+    <insert id="creatShop" parameterType="com.haomeng.wisdomputian.bean.Shop">
+        insert into shop (id, shopname, lat, lon, backgroundimage, heardimage, phone)
+        values (#{id}, #{shopname}, #{lat}, #{lon}, #{backgroundimage}, #{heardimage}, #{phone})
+    </insert>
+
+    <!-- 更新店铺信息-->
+    <update id="updateShopInfo" parameterType="com.haomeng.wisdomputian.bean.Shop">
+        update shop
+        set shopname=#{shopname},
+            lat=#{lat},
+            lon=#{lon},
+            backgroundimage=#{backgroundimage},
+            heardimage=#{heardimage},
+            phone=#{phone}
+        where id = #{id}
+    </update>
+
+   <!-- <select id="searchstors" parameterType="com.haomeng.wisdomputian.bean.SearchListPageParam"
+            resultType="com.haomeng.wisdomputian.bean.Shop">
+        select *
+        from shop
+        order by ctime limit (#{startnum}, #{endnum})
+    </select>-->
+</mapper>
+
+
+
+
+
+
+
+

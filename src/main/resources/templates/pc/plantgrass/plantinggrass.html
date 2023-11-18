@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+</head>
+
+<body onload="searchList()">
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <!-- 头部页面路径 -->
+                <div class="layui-card-header">
+                     <span class="layui-breadcrumb">
+                      <a href="javaScript:">APP管理</a>
+                      <a href="javascript:window.location.reload();"><cite>种草编辑</cite></a>
+                    </span>
+                </div>
+
+                <!-- 添加用户 -->
+                <div class="layui-card-header layui-inline ">
+                    <a id="add" class="layui-btn layui-btn-normal layui-icon" href="add/addplantgrass">&#xe654;新建</a>
+                </div>
+
+
+                <div class="layui-card-body">
+                    <table class="layui-table" id="LAY_table_user"
+                           lay-filter="LAY_table_user">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="plantgrassTableBarEdit">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" href="/plantgrass/editplantgrass?plantgrassid={{d.id}}">修改</a>
+</script>
+
+<script>
+    function screen() {
+        //获取当前窗口的宽度
+        var width = $(window).width();
+        if (width > 1699) {
+            return [{
+                area: ['1550px', '800px'],
+                size: "lg",
+                height: 700,
+                limit: 20
+            }]; //1920
+        } else {
+            return [{
+                area: ['970px', '670px'],
+                size: "",
+                height: 472,
+                limit: 20
+            }]; //1280
+        }
+    }
+
+    Array.prototype.removeRepeatAttrByID = function () {
+        var tmp = {},
+            a = this.slice();
+        for (var i = j = 0; i < a.length; i++) {
+            if (!tmp[a[i].id]) {
+                tmp[a[i].id] = !0;
+                j++;
+            } else {
+                this.splice(j, 1);
+            }
+        }
+    };
+
+    function searchList() {
+        layui.use(['form', 'table', 'element'], function () {
+            var form = layui.form,
+                table = layui.table;
+            $.ajax({
+                type: "POST",
+                url: "obtainplantgrass",
+                dataType: "json",
+                async: false,
+                success: function (sucdata) {
+                    console.log(sucdata);
+                    var erroCode = sucdata.erroCode;
+                    if (erroCode == 200) {
+                        jdata = sucdata.backData;
+                    } else {
+                        jdata = [];
+                    }
+                }
+            });
+
+            table.render({
+                elem: '#LAY_table_user',
+                data: jdata,
+                cols: [[
+                    {
+                        field: 'title',
+                        title: '种草标题',
+                        width: 150,
+                    },
+                    {
+                        field: 'userid',
+                        title: '用户id',
+                        width: 70,
+                        align: 'center',
+                    },
+                    {
+                        field: 'username',
+                        title: '用户',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        field: 'userhead',
+                        title: '用户头像',
+                        width: 90,
+                        align: 'center',
+                        templet: function (e) {
+                            return '<img style="width: 40px;height:40px;" src="' + e.userhead + '"/>';
+                        }
+                    },
+                    {
+                        field: 'goodsid',
+                        title: '商品id',
+                        width: 80,
+                        align: 'center',
+                    },
+                    {
+                        field: 'likes',
+                        title: '点赞',
+                        width: 70,
+                        align: 'center',
+                    },
+                    {
+                        field: 'conform', title: '核对', align: "center", sort: false, width: 120,
+                        templet: function (d) {
+                            if (d.conform == 0) {
+                                return "审核中...";
+                            } else if (d.conform == 1) {
+                                return "通过";
+                            } else {
+                                return "拒绝";
+                            }
+                        }
+                    },
+                    {
+                        field: 'details_picture', title: '图片', align: "left", sort: false, width: 260,
+                        templet: function (d) {
+                            var pic = d.details_picture.split(",");
+                            var strhtml = "";
+                            if (pic != null && pic != "") {
+                                strhtml += "<div>";
+                                for (var i = 0; i < pic.length; i++) {
+                                    strhtml += '<img style="width: 40px;height:40px;" src="' + pic[i] + '"/>';
+                                }
+                                strhtml += "</div>";
+                            }
+                            return strhtml;
+                        }
+                    },
+                    {
+                        field: 'video', title: '视频', align: "center", sort: false, width: 200,
+                        templet: function (d) {
+                            var strhtml = "";
+                            strhtml += '<div ><video controls="" class="video"  name="media" style="width: 40px;height:40px;"  > <source src="' + d.video + '"></video> </video> </div>';
+                            return strhtml;
+                        }
+                    },
+                    {
+                        title: '操作', align: "center", templet: '#plantgrassTableBarEdit'
+                    }
+
+                ]
+                ],
+                id: "idTest",
+                height: screen()[0].height,
+                page: true,
+                limit: 20,
+                limits: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+            });
+        });
+    }
+
+</script>
+</body>
+</html>

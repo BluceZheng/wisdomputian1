@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+
+</head>
+
+<body>
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <!-- 头部页面路径 -->
+                <div class="layui-card-header">
+                     <span class="layui-breadcrumb">
+                      <a href="javaScript:">APP管理</a>
+                      <a href="javascript:window.location.reload();"><cite>订单</cite></a>
+                    </span>
+                </div>
+                <!-- 添加用户 -->
+                <div class="layui-card-header layui-inline ">
+                    <form class="layui-form" id="ordersearchparam">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">订单号</label>
+                            <div class="layui-input-inline">
+                                <input class="layui-input" id="orderno" name="orderno" type="text">
+                            </div>
+
+                            <label class="layui-form-label">订单状态</label>
+                            <div class="layui-input-inline">
+                                <select name="orderstate" id="orderstate" lay-filter="orderstate">
+                                    <option value="-1">未选择</option>
+                                </select>
+                            </div>
+
+                            <label class="layui-form-label">订单类型</label>
+                            <div class="layui-input-inline">
+                                <select name="type" id="type" lay-filter="type">
+                                    <option value="-1">未选择</option>
+                                </select>
+                            </div>
+
+                            <label class="layui-form-label">联系方式</label>
+                            <div class="layui-input-inline">
+                                <input class="layui-input" id="phone" name="phone" type="text">
+                            </div>
+                            <div class="layui-input-inline">
+                                <button id="searchsubmit" class="layui-btn layui-icon" lay-submit lay-filter="tijiao">
+                                    &#xe681;查找
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-card-body">
+                    <table class="layui-table" id="LAY_table_user"
+                           lay-filter="LAY_table_user">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="plantgrassTableBarEdit">
+
+    {{#if(d.state == 1){}}
+    <a class="layui-btn layui-bg-cyan layui-btn-xs" onclick="updateState({{d.id}},1)">接单</a>
+    {{# }else if(d.state == 2){}}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="updateState({{d.id}},2)">处理完成</a>
+    {{#}}}
+    {{# if(d.state == 0|| d.state == 1 || d.state ==2 || d.state == 3 || d.state ==4 || d.state == 5 || d.state == 6 ){}}
+    <a class="layui-btn layui-btn-green layui-btn-xs" onclick="sendCode()">发送验证码</a>
+    {{#}}}
+</script>
+
+<script>
+    var form;
+    $(function () {
+        layui.use(['form', 'table', 'element'], function () {
+            form = layui.form;
+            //订单类型 状态 设置
+            odTypeStatus();
+        });
+    })
+
+    //订单类型 状态 设置
+    function odTypeStatus() {
+        $.ajax({
+            type: "POST",
+            url: "/orders/order/typestatus",
+            async: false,
+            success: function (sucdata) {
+                if (sucdata && sucdata != null) {
+                    var code = sucdata.erroCode;
+                    var errorMessage = sucdata.errorMessage;
+                    if (code == 200) {
+                        //获取返回数据
+                        var backData = sucdata.backData;
+                        //订单类型
+                        var orderType = backData.orderType;
+                        var orderTypeStr = "";
+                        for (var i = 0; i < orderType.length; i++) {
+                            orderTypeStr += "<option value='" + orderType[i].id + "'>" + orderType[i].describe + "</option>";
+                        }
+                        $("#type").append(orderTypeStr);
+                        //订单状态
+                        var orderStatus = backData.orderStatus;
+                        var orderStatusStr = "";
+                        for (var i = 0; i < orderStatus.length; i++) {
+                            orderStatusStr += "<option value='" + orderStatus[i].statusno + "'>" + orderStatus[i].statusdescript + "</option>";
+                        }
+                        $("#orderstate").append(orderStatusStr);
+                        console.log(form);
+                        form.render();
+                        //获取订单信息
+                        searchList();
+                    } else {
+                        console.log("订单类型，订单状态获取失败");
+                    }
+                } else {
+                    console.log("订单类型，订单状态获取失败");
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取屏幕
+     * @returns {[{area: string[], size: string, limit: number, height: number}]}
+     */
+    function screen() {
+        //获取当前窗口的宽度
+        var width = $(window).width();
+        if (width > 1699) {
+            return [{
+                area: ['1550px', '800px'],
+                size: "lg",
+                height: 700,
+                limit: 20
+            }]; //1920
+        } else {
+            return [{
+                area: ['970px', '670px'],
+                size: "",
+                height: 472,
+                limit: 20
+            }]; //1280
+        }
+    }
+
+    Array.prototype.removeRepeatAttrByID = function () {
+        var tmp = {},
+            a = this.slice();
+        for (var i = j = 0; i < a.length; i++) {
+            if (!tmp[a[i].id]) {
+                tmp[a[i].id] = !0;
+                j++;
+            } else {
+                this.splice(j, 1);
+            }
+        }
+    };
+
+    //查找订单
+    function searchList() {
+        form.on('submit(tijiao)', function (data) {
+            $.ajax({
+                type: "POST"
+                , dataType: "json"
+                , url: "/orders/order/obtainorder"
+                , data: $("#ordersearchparam").serialize()
+                , success: function (sucdata) {
+                    var erroCode = sucdata.erroCode;
+                    var errorMessage = sucdata.errorMessage;
+                    var backData = sucdata.backData;
+                    layer.msg(errorMessage);
+                    if (erroCode == 200) {
+                        jdata = backData;
+                    } else {
+                        jdata = [];
+                    }
+                    //更新表单数据
+                    insertTable();
+                }
+                , error: function (errdata) {
+                    console.log(errdata);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //提交按钮点击
+        $('#searchsubmit').click();
+    }
+
+    //更新表单数据
+    function insertTable() {
+        layui.table.render({
+            elem: '#LAY_table_user',
+            data: jdata,
+            cols: [[
+                {
+                    field: 'orderno',
+                    title: '订单号',
+                    align: 'center',
+                    width: 150,
+                },
+                {
+                    field: 'status',
+                    title: '订单状态',
+                    width: 200,
+                    align: 'center'
+                },
+                {
+                    field: 'customername',
+                    title: '客户名称',
+                    width: 80,
+                    align: 'center',
+                },
+                {
+                    field: 'phone',
+                    title: '联系方式',
+                    width: 120,
+                    align: 'left'
+                },
+                {
+                    title: '地址',
+                    width: 280,
+                    align: 'left',
+                    templet: function (e) {
+                        var address = e.province + ' ' + e.city + ' ' + e.country + ' ' + e.area;
+                        return address;
+                    }
+                },
+                {
+                    field: 'type',
+                    title: '订单类型',
+                    width: 100,
+                    align: 'center'
+                },
+                {
+                    field: 'creattime',
+                    title: '创建时间',
+                    width: 180,
+                    align: 'center',
+                },
+                {
+                    title: '操作', align: "left", templet: '#plantgrassTableBarEdit'
+                }
+
+            ]
+            ],
+            id: "idTest",
+            height: screen()[0].height,
+            page: true,
+            limit: 20,
+            limits: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+        });
+    }
+
+    /**
+     * 更新状态
+     * @param id
+     * @param no
+     */
+    function updateState(id, no) {
+
+    }
+
+</script>
+</body>
+</html>

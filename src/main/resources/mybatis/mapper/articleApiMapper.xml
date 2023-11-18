@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.ArticleApiMapper">
+
+    <!--  返回查询的对象  -->
+    <resultMap id="ArticleBeans" type="com.haomeng.wisdomputian.bean.Article">
+        <result property="id" column="id"/>
+        <result property="userid" column="userid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="isdelete" column="isdelete"/>
+        <collection property="photosList" ofType="com.haomeng.wisdomputian.bean.Photos">
+            <id property="id" column="ptosid"/>
+            <result property="linkid" column="linkid"/>
+            <result property="path" column="path"/>
+            <result property="name" column="name"/>
+            <result property="isdelete" column="ptoisdelete"/>
+        </collection>
+    </resultMap>
+
+    <!--  新建文章  -->
+    <insert id="AddArticle" parameterType="com.haomeng.wisdomputian.bean.Article">
+        insert into article (id, requestid, title, content, address, persion, phone, money)
+        values (#{id}, #{userid}, #{title}, #{content}, #{address}, #{persion}, #{phone}, #{money})
+    </insert>
+
+    <!--  查询文章信息带经纬度查询 审核通过 不是删除的数据 -->
+    <select id="SearchLonLatArticle" parameterType="com.haomeng.wisdomputian.bean.PageParam"
+            resultType="com.haomeng.wisdomputian.bean.Article">
+
+        select art.id,
+               art.userid,
+               art.title,
+               art.content,
+               art.isdelete,
+               art.address,
+               art.persion,
+               art.phone,
+               art.money,
+               art.examine,
+               art.reason,
+               art.lon,
+               art.lat,
+               art.titleimg,
+               art.crttime,
+               case when art.distance > 999
+                   then CONCAT(round(art.distance / 1000, 2), 'Km')
+                   else CONCAT(round(art.distance, 2), 'm') end
+               as distance
+        from (select *,
+                     ROUND(6378.138 * 2 * ASIN(
+                             SQRT(POW(SIN((lat * PI() / 180 - #{lat} * PI() / 180) / 2), 2)
+                                 + COS(lat * PI() / 180) * COS(#{lat} * PI() / 180) *
+                                   POW(SIN((lon * PI() / 180 - #{lon} * PI() / 180) / 2), 2)
+                                 )
+                         ) * 1000
+                         ) AS distance
+              from article
+              where isdelete = 0 and examine = 1
+              order by distance) art order by crttime  limit #{pagestart}, #{limit}
+
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.RegionCategoryMapper">
+
+    <!-- 添加区域分类信息 -->
+    <insert id="AddRegionCategory" parameterType="com.haomeng.wisdomputian.bean.RegionCategory">
+        insert into regioncategory (id, regionid, categoryid)
+        values (#{id}, #{regionid}, #{categoryid})
+    </insert>
+
+    <!--  删除区域中的所有分类  -->
+    <delete id="DeleteRegionCategoryByRegionid" parameterType="com.haomeng.wisdomputian.bean.RegionCategory">
+        delete
+        from regioncategory
+        where regionid = #{regionid}
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+

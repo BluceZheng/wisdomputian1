@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{css/login.css}">
+    <script th:src="@{js/login.js}"></script>
+    <script th:src="@{js/md5.js}"></script>
+    <script th:src="@{js/yz.js}"></script>
+    <script type="text/javascript" th:src="@{js/jquery-3.3.1.min.js}"></script>
+    <style>
+        html body {
+            padding: 0;
+            margin: 0;
+        }
+
+        input:-webkit-autofill {
+            box-shadow: 0 0 0 1000px #fff inset;
+        }
+
+        .info-content {
+            width: 135px;
+            height: 230px;
+            background: #fff;
+            border-radius: 6px;
+            position: absolute;
+            right: 10px;
+            bottom: 400px;
+        }
+    </style>
+</head>
+<body>
+<div id="box"
+     th:style="'display: flex;justify-content: center;align-items: center;background: url('+@{images/loginbg.jpg}+');background-size: cover'">
+    <div id="app"
+         style="background: white;border-radius: 20px;position: relative">
+        <div id="img"
+             th:style="'position:absolute;top: 0;bottom: 0;left: 0;border-radius: 20px 0 0 20px;background: url('+@{images/loginlogo.jpg}+');background-size: cover'"></div>
+        <form action="loginaction/login" method="post" id="myform">
+            <div id="login"
+                 style="position:absolute;top: 0;bottom: 0;right: 0;border-radius: 20px;">
+                <div id="blank1" style="position:absolute;top:0;width: 100%;"></div>
+                <div id="title"
+                     style="position:absolute;width: 100%;display: flex;justify-content: center;align-items: center;color:#217ee9">
+                    欢迎登陆系统
+                </div>
+                <div id="input"
+                     style="position:absolute;width: 100%;display: flex;justify-content: center;align-items: center;">
+                    <div id="input1" style="display: flex;flex-wrap: wrap">
+                        <div
+                                style="width: 100%;height: 50%;display: flex;align-items: center;">
+                            <div id="input2"
+                                 style="border-bottom: 1px solid rgb(160, 159, 159);width: 100%;display: flex;align-items: center;">
+                                <img id="img1" th:src="@{images/loginuser.png}" style="margin-right: 10px">
+                                <input id="user" name="username" type="text" style="width: 100%;border: 0">
+                            </div>
+                        </div>
+                        <div style="width: 100%;height: 50%;display: flex;align-items: center;">
+                            <div id="input3"
+                                 style="border-bottom: 1px solid rgb(160, 159, 159);width: 100%;display: flex;align-items: center;">
+                                <img id="img2" th:src="@{images/loginpassword.png}" style="margin-right: 10px">
+                                <input id="password" name="password" type="password" style="width: 100%;border: 0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="button"
+                     style="position:absolute;width: 100%;display: flex;justify-content: center;align-items: center;">
+                    <input id="button1" type="submit" value="登录" onclick="toVaild()"
+                           style="cursor: pointer;border: 0;height: 100%;background: #2286FE;color: white;display: flex;justify-content: center;align-items: center;"/>
+                </div>
+
+                <div id="blank2" style="position:absolute;bottom: 0;width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script>
+    function toVaild() {
+        var password = document.getElementById("password").value;
+        var user = document.getElementById("user").value;
+        if (user == "" || password == "") {
+            layui.use(['layer'], function () {
+                var layer = layui.layer;
+                layer.alert('请先输入用户名和密码！');
+            });
+            return false;
+        }
+        if (password != "") {
+            document.getElementById("myform").submit();
+            //  up();
+        }
+
+    }
+
+    $("#box").css({
+        "width": $(window).width() + 'px',
+        "height": $(window).height() + 'px'
+    });
+    $("#app").css({
+        "width": $(window).width() * 0.63 + 'px',
+        "height": $(window).width() * 0.63 / 1.6 + 'px'
+    });
+    $("#img").css({
+        "right": $(window).width() * 0.27 + 'px'
+    });
+    $("#login").css({
+        "left": $(window).width() * 0.36 + 'px'
+    });
+    $("#blank1").css({
+        "height": $(window).width() * 0.63 / 1.6 * 0.22 + 'px'
+    });
+    $("#title").css({
+        "height": $(window).width() * 0.63 / 1.6 * 0.06 + 'px',
+        "top": $(window).width() * 0.63 / 1.6 * 0.22 + 'px',
+        "font-size": $(window).width() * 0.0125 * 1.6 + 'px'
+    });
+    $("#input").css({
+        "top": $(window).width() * 0.63 / 1.6 * 0.28 + 'px',
+        "bottom": $(window).width() * 0.63 / 1.6 * 0.28 + 'px'
+    });
+    $("#input1").css({
+        "width": $(window).width() * 0.63 * 0.28 + 'px',
+        "height": $(window).width() * 0.63 / 1.6 * 0.22 + 'px',
+    });
+    $("#input2").css({
+        "height": $(window).width() * 0.02 + 'px',
+    });
+    $("#img1").css({
+        "width": $(window).width() * 0.0125 + 'px'
+    });
+    $("#user").css({
+        "height": $(window).width() * 0.018 + 'px',
+        "font-size": $(window).width() * 0.0125 + 'px'
+    });
+    $("#input3").css({
+        "height": $(window).width() * 0.02 + 'px',
+    });
+    $("#img2").css({
+        "width": $(window).width() * 0.0125 + 'px'
+    });
+    $("#password").css({
+        "height": $(window).width() * 0.018 + 'px',
+        "font-size": $(window).width() * 0.0125 + 'px'
+    });
+    $("#button").css({
+        "height": $(window).width() * 0.63 / 1.6 * 0.08 + 'px',
+        "bottom": $(window).width() * 0.63 / 1.6 * 0.2 + 'px'
+    });
+    $("#blank2").css({
+        "height": $(window).width() * 0.63 / 1.6 * 0.2 + 'px'
+    });
+    $("#button1").css({
+        "width": $(window).width() * 0.63 * 0.26 + 'px',
+        "border-radius": $(window).width() * 0.63 / 1.6 * 0.08 + 'px',
+        "font-size": $(window).width() * 0.63 / 1.6 * 0.08 * 0.5 + 'px'
+    })
+</script>
+</html>

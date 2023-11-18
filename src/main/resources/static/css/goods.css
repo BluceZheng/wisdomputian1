@@ -1,0 +1,14 @@
+.showviewimg{
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    border: solid #c8c8c8 0.25px;
+}
+
+
+.showviewimgbanner{
+    width: 200px;
+    height: 80px;
+    border-radius: 80px;
+
+}

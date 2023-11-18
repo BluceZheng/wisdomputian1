@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加商品</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/plantgrass.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/upload.css}" media="all">
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:;">APP管理</a>
+                      <a href="javascript:history.back(-1);window.close();">种草</a>
+                      <a href="javascript:window.location.reload();"><cite>编辑种草</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-body">
+
+                    <form class="layui-form" id="plantgrassinfoform">
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input type="hidden" autocomplete="off" class="layui-input"
+                                       id="id" name="id" th:value="${plantgrassid}">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">种草标题</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="title" name="title">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关联商品ID</label>
+                                <div class="layui-inline">
+                                    <button type="button" class="layui-btn" id="linkgoods">查找商品</button>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input"
+                                           id="goodsid" readonly="readonly" name="goodsid"
+                                           oninput="value=value.replace(/[^\d]/g,'')">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关联用户ID</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input"
+                                           id="userid" name="userid" readonly="readonly"
+                                           oninput="value=value.replace(/[^\d]/g,'')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 用户名 -->
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关联用户名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="username" name="username">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 头像 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">头像</label>
+                            <div class="layui-input-block layui-upload" id="reloadheadImg">
+                                <button type="button" class="layui-btn" id="addheadimg">设置头像</button>
+                                <button type="button" class="layui-btn layui-btn-primary" style="display: none"
+                                        id="uploadheadimg">上传图片
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-disabled" style="display: none"
+                                        id="doneheadimg">上传成功
+                                </button>
+                            </div>
+                            <label class="layui-form-label"></label>
+                            <div class="layui-upload-list layui-input-block ">
+                                <img id="headimg" src="" class="layui-upload-img showviewimg">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">点赞数</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input"
+                                           id="likes" name="likes">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">审核控制</label>
+                                <div class="layui-input-inline">
+                                    <select id="conform" name="conform" lay-filter="conform">
+                                        <option value="0">审核中</option>
+                                        <option value="1">通过</option>
+                                        <option value="2">拒绝</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 备注 -->
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">备注</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" value="0" class="layui-input"
+                                           id="remark" name="remark">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">展示图</label>
+                            <div class="layui-input-block layui-upload" id="reloadDetaisImg">
+                                <button type="button" class="layui-btn" id="adddetailsimg">添加展示图</button>
+                                <button type="button" class="layui-btn layui-btn-primary" style="display: none"
+                                        id="uploaddetailsimg">上传图片
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-disabled" style="display: none"
+                                        id="donedetailsimg">上传成功
+                                </button>
+                            </div>
+                            <label class="layui-form-label"></label>
+                            <div class="layui-upload-list layui-input-block " id="detailsimglist"></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">展示视频</label>
+                            <div class="layui-input-block layui-upload" id="reloadMainImg">
+                                <button type="button" class="layui-btn" id="addmainimg">添加视频</button>
+                                <button type="button" class="layui-btn layui-btn-primary" style="display: none"
+                                        id="uploadmainimg">上传视频
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-disabled" style="display: none"
+                                        id="donemainimg">上传成功
+                                </button>
+                            </div>
+                            <label class="layui-form-label"></label>
+                            <div class="layui-upload-list layui-input-block" id="showvideo">
+                            </div>
+
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline" id="pictures"></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline" id="videos"></div>
+                        </div>
+
+                        <div class="layui-form-item" hidden>
+                            <div class="layui-inline" id="userhead"></div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        layui.use(['form', 'element'], function () {
+            var form = layui.form;
+            form.on('submit(tijiao)', function (data) {
+                $.ajax({
+                    type: "POST"
+                    , dataType: "json"
+                    , url: "/plantgrass/update/updateplantgrass"
+                    , data: $("#plantgrassinfoform").serialize()
+                    , success: function (sucdata) {
+                        var erroCode = sucdata.erroCode;
+                        var errorMessage = sucdata.errorMessage;
+                        var backData = sucdata.backData;
+                        layer.msg(errorMessage);
+                        if (erroCode != 200) {
+                            return;
+                        }
+                        setTimeout(function () {
+                            history.back(-1);
+                            window.close();
+                        }, 2000);
+                    }
+                    , error: function (errdata) {
+                        console.log(errdata);
+                    }
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });
+        //获取种草信息
+        getplantgrass();
+    });
+
+    //上传头像
+    layui.use('upload', function () { //独立版的layer无需执行这一句
+        var $ = layui.jquery, upload = layui.upload;
+        //独立版的layer无需执行这一句
+        var num = 1;
+        var uploadInst = upload.render({
+            elem: '#addheadimg'
+            , url: '/fileUpload' //改成您自己的上传接口
+            , accept: "images"//直接收图片文件
+            , auto: false//选择文件之后不直接上传
+            , bindAction: "#uploadheadimg"//指定按钮上传
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#headimg').empty();
+                    $('#headimg').attr("src", result);
+                    $("#addheadimg").text("更换头像");
+                    $("#uploadheadimg").css("display", "");
+                });
+            }
+            , done: function (res) {
+                $("#userhead").append('<input type="hidden" autocomplete="off" class="layui-input"  name="userhead" value="' + res.path + '" >');
+                //上传成功
+                $("#addheadimg").css("display", "none");
+                $("#uploadheadimg").css("display", "none");
+                $("#doneheadimg").css("display", "");
+                layer.msg("成功上传");
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var reloadMainImg = $('#reloadMainImg');
+                reloadMainImg.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                reloadMainImg.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    });
+
+    //上传视频
+    layui.use('upload', function () { //独立版的layer无需执行这一句
+        var $ = layui.jquery, upload = layui.upload;
+        ; //独立版的layer无需执行这一句
+        var num = 1;
+        var uploadInst = upload.render({
+            elem: '#addmainimg'
+            , url: '/fileUpload' //改成您自己的上传接口
+            , accept: "video"//直接收图片文件
+            , auto: false//选择文件之后不直接上传
+            , bindAction: "#uploadmainimg"//指定按钮上传
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#showvideo').empty();
+                    $('#showvideo').append("<video controls='' class='video' autoplay='' name='media'> <source id='source_video' src='" + result + "' type='video/mp4'></video>");
+                    $("#addmainimg").text("更换视频");
+                    $("#uploadmainimg").css("display", "");
+                });
+            }
+            , done: function (res) {
+                $("#videos").append('<input type="hidden" autocomplete="off" class="layui-input"  name="video" value="' + res.path + '" >');
+                //上传成功
+                $("#addmainimg").css("display", "none");
+                $("#uploadmainimg").css("display", "none");
+                $("#donemainimg").css("display", "");
+                layer.msg("成功上传");
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var reloadMainImg = $('#reloadMainImg');
+                reloadMainImg.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                reloadMainImg.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    });
+
+    //上传详情图
+    layui.use('upload', function () { //独立版的layer无需执行这一句
+        var $ = layui.jquery, upload = layui.upload;
+        //独立版的layer无需执行这一句
+        var uploadInst = upload.render({
+            elem: '#adddetailsimg'
+            , url: '/fileUpload' //改成您自己的上传接口
+            , multiple: true
+            , accept: "images"//直接收图片文件
+            , auto: false//选择文件之后不直接上传
+            , bindAction: "#uploaddetailsimg"//指定按钮上传
+            , choose: function (obj) {
+                $('#detailsimglist').empty();
+                obj.preview(function (index, file, result) {
+                    $('#detailsimglist').append('<img src="' + result + '" alt="' + file.name + '" class="layui-upload-img showviewimg">')
+                });
+                $("#adddetailsimg").text("继续添加");
+                $("#uploaddetailsimg").css("display", "");
+            }
+            , done: function (res) {
+                $("#pictures").append('<input type="hidden" autocomplete="off" class="layui-input"  name="details_picture" value="' + res.path + '" >');
+                $("#adddetailsimg").css("display", "none");
+                $("#uploaddetailsimg").css("display", "none");
+                $("#donedetailsimg").css("display", "");
+                layer.msg("成功上传");
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var reloadDetaisImg = $('#reloadDetaisImg');
+                reloadDetaisImg.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                reloadDetaisImg.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    })
+
+    //获取数据
+    function getplantgrass() {
+        var id = $("#id").val();
+        $.ajax({
+            url: "/plantgrass/obtainsimpleplantgrass"
+            , type: "POSt"
+            , dataType: "json"
+            , data: {
+                id: id
+            }
+            , success: function (sucdata) {
+                console.log(sucdata);
+                var erroCode = sucdata.erroCode;
+                var errorMessage = sucdata.errorMessage;
+                if (erroCode == 200) {
+                    var backData = sucdata.backData;
+                    $("#title").val(backData.title);
+                    $("#goodsid").val(backData.goodsid);
+                    $("#userid").val(backData.userid);
+                    $("#likes").val(backData.likes);
+                    $("#conform").val(backData.conform);
+                    $("#remark").val(backData.remark);
+                    $('#username').val(backData.username);
+                    $('#headimg').attr("src", "/" + backData.userhead);
+                    var pic = backData.details_picture.split(",");
+                    var str = "";
+                    if (pic != null || pic != "") {
+                        for (var i = 0; i < pic.length; i++) {
+                            str += "<img src='/" + pic[i] + "'  class='showviewimg' />";
+                        }
+                        $("#detailsimglist").append(str);
+                    }
+                    if (backData.video != "") {
+                        $("#showvideo").append("<video controls='' class='video'  name='media'><source src='/" + backData.video + "' type='video/mp4' /></video>")
+                    }
+                    layui.form.render('select');
+                } else {
+                    layer.msg(errorMessage);
+                }
+            }
+            , error: function (errdata) {
+                console.log(errdata);
+            }
+        })
+    }
+
+</script>
+
+</body>
+</html>

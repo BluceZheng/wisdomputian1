@@ -1,0 +1,16 @@
+.bannen{ background:#edecec; padding-top:0.5rem; padding-bottom:0.5rem;}
+.bannen .bannen_bj{ background:#FFF; height:13rem; overflow:hidden;}
+.bannen .b_ul{  background-size: 51%; height:13rem; }
+.bannen .b_ul .lia{ height:14rem; display:block; }
+.bannen .b_ul img{height:auto;width:100%;}
+.swipe{overflow:hidden;position:relative;width:100%;margin:0 auto;}
+.swipe-wrap{overflow:hidden;position:relative;-webkit-backface-visibility:hidden;-moz-backface-visibility:hidden;-ms-backface-visibility:hidden;-o-backface-visibility:hidden;backface-visibility:hidden;z-index:99;}
+.swipe-wrap .swipe_pic{float:left;position:relative;}
+.swipe_pic{position:relative;overflow:hidden;}
+.swipe_pic a{display:block;}
+.swipe_pic img{width:100%;height:auto;}
+.swipe_h3{padding:0 14px;font-size:16px;font-weight:normal;background:rgba(0,0,0,0.6);height:26px;line-height:26px;color:#fff;text-shadow:1px 1px 0 #000;}
+.swipe_num{margin-top:-1rem;position:absolute;text-align:center;z-index:100;left:0px;right:0px; width:60px; margin-left:auto;margin-right:auto}
+.swipe_num li{float:left;width:8px;height:8px;font-size:0;background:#ffffff40;margin-right:5px;overflow:hidden;border-radius:8px}
+.swipe_num li:last-child{margin-right:0}
+.swipe_num li.active{width:8px;height:8px;background:#ffffff;border-radius:8px}

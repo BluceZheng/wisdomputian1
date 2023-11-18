@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.RegionMapper">
+
+    <!-- 获取所有的区域 -->
+    <select id="SelectAllRegion" resultType="com.haomeng.wisdomputian.bean.Region"
+            parameterType="com.haomeng.wisdomputian.bean.PageParam">
+        select *
+        from region
+        where isdelete !=1
+        limit #{pagestart}
+            , #{pageend}
+    </select>
+
+    <!-- 获取所有的已删除的区域图 -->
+    <select id="SearchAllDeletedRegion" resultType="com.haomeng.wisdomputian.bean.Region"
+            parameterType="com.haomeng.wisdomputian.bean.PageParam">
+        select *
+        from region
+        where isdelete !=0
+        limit #{pagestart}
+            , #{pageend}
+    </select>
+
+    <!-- 获取区域数量 -->
+    <select id="ObtainSum" resultType="long">
+        select count(id)
+        from region
+        where isdelete != 1
+    </select>
+
+    <!--  逻辑删除区域信息  -->
+    <update id="LogicDeleteRegion" parameterType="com.haomeng.wisdomputian.bean.Region">
+        update region
+        set isdelete=1
+        where id = #{id}
+    </update>
+
+    <!--  更新区域数据  -->
+    <update id="UpdateRegion" parameterType="com.haomeng.wisdomputian.bean.Region">
+        update region
+        set lon= #{lon},
+            lat=#{lat},
+            addrdetails =#{addrdetails},
+            abbreviation =#{abbreviation},
+            province =#{province},
+            city =#{city},
+            area =#{area},
+            address =#{address}
+        where id = #{id}
+    </update>
+
+    <!-- 获取区域信息byid  -->
+    <select id="SearchSimpleRegion" parameterType="String" resultType="com.haomeng.wisdomputian.bean.Region">
+        select *
+        from region
+        where id = #{id}
+    </select>
+
+    <!--  还原逻辑删除区域信息  -->
+    <update id="LogicDeleteRegionReject" parameterType="com.haomeng.wisdomputian.bean.Region">
+        update region
+        set isdelete=0
+        where id = #{id}
+    </update>
+
+    <!-- 正式删除区域信息  -->
+    <delete id="RealDeleteRegion" parameterType="com.haomeng.wisdomputian.bean.Region">
+        delete
+        from region
+        where id = #{id}
+    </delete>
+
+    <!-- 添加区域信息  -->
+    <insert id="AddRegion" parameterType="com.haomeng.wisdomputian.bean.Region">
+        insert into region (id, lon, lat, addrdetails, abbreviation, province, city, area, address)
+        values (#{id}, #{lon}, #{lat}, #{addrdetails}, #{abbreviation}, #{province}, #{city}, #{area}, #{address})
+    </insert>
+
+</mapper>
+
+
+
+
+
+
+
+

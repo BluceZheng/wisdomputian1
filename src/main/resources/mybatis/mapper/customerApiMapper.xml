@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.CustomerApiMapper">
+
+    <!--  微信小程序 获取openid下的用户  -->
+    <select id="WChatSearchCustomerInfo" parameterType="String" resultType="com.haomeng.wisdomputian.bean.Customer">
+        select *
+        from customer
+        where wchat_openid = #{wchat_openid}
+    </select>
+
+    <!--  微信小程序注册用户 openid  -->
+    <insert id="WChatRegisterCustomer" parameterType="com.haomeng.wisdomputian.bean.Customer">
+        insert into customer (id, wchat_openid, token)
+        values (#{id}, #{wchat_openid}, #{token})
+    </insert>
+
+    <!-- 小程序更新用户手机号 -->
+    <select id="WChatUpdateCustomer" parameterType="com.haomeng.wisdomputian.bean.Customer">
+        update customer
+        set phone=#{phone},
+            username = #{username},
+            nickname = #{nickname},
+            password = #{password},
+            headportrait = #{headportrait},
+            sex = #{sex},
+            birthday = #{birthday},
+            picture = #{picture}
+        where id = #{id}
+    </select>
+
+    <!--  小程序更新用户手机号  -->
+    <update id="WChatUpdateCustomerPhone" parameterType="com.haomeng.wisdomputian.bean.Customer">
+        update customer
+        set phone=#{phone}
+        where id = #{id}
+    </update>
+</mapper>
+
+
+
+
+
+
+
+

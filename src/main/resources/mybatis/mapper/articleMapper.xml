@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.ArticleMapper">
+
+    <!--  返回查询的对象  -->
+    <resultMap id="ArticleBeans" type="com.haomeng.wisdomputian.bean.Article">
+        <result property="id" column="id"/>
+        <result property="userid" column="userid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="isdelete" column="isdelete"/>
+        <collection property="photosList" ofType="com.haomeng.wisdomputian.bean.Photos">
+            <id property="id" column="ptosid"/>
+            <result property="linkid" column="linkid"/>
+            <result property="path" column="path"/>
+            <result property="name" column="name"/>
+            <result property="isdelete" column="ptoisdelete"/>
+        </collection>
+    </resultMap>
+
+    <!--  新建文章  -->
+    <insert id="AddArticle" parameterType="com.haomeng.wisdomputian.bean.Article">
+        insert into article (id, userid, title, content, address, persion, phone, money)
+        values (#{id}, #{userid}, #{title}, #{content}, #{address}, #{persion}, #{phone}, #{money})
+    </insert>
+
+    <!--  查找文章信息  -->
+    <select id="SearchArticles" resultMap="ArticleBeans" parameterType="com.haomeng.wisdomputian.bean.Article">
+        select art.*, ptos.id as ptosid, ptos.isdelete as ptoisdelete, ptos.*
+        from article art
+        left join photos ptos on art.id = ptos.linkid
+        where art.isdelete != 1
+        and art.id = #{id}
+        <if test="userid != null">and art.userid=#{userid}</if>
+        <if test="title != null">and art.title like '%'||#{title}||'%'</if>
+        <if test="content != null">and art.content like '%'||#{content}||'%'</if>
+    </select>
+
+    <!--  查询文章信息带经纬度查询  -->
+    <select id="SearchLonLatArticle" parameterType="com.haomeng.wisdomputian.bean.PageParam" resultMap="ArticleBeans">
+
+        select ar.id,ar.userid ,ar.title ,ar.content ,ar.isdelete ,ar. ,ar. ,ar. , case when ar.dis > 1 then CONCAT(ar.dis, "Km") else CONCAT(ar.dis, "m") end as distance
+        from (select art.*,
+                     format(case when art.distance > 999 then art.distance / 1000 else art.distance end, 2) as dis
+              from (select *,
+                           ROUND(6378.138 * 2 * ASIN(
+                                   SQRT(POW(SIN((lat * PI() / 180 - #{lat} * PI() / 180) / 2), 2)
+                                       + COS(lat * PI() / 180) * COS(#{lat} * PI() / 180) *
+                                         POW(SIN((lon * PI() / 180 - #{lon} * PI() / 180) / 2), 2)
+                                       )
+                               ) * 1000
+                               ) AS distance
+                    from article where isdelete = 0
+                    order by distance) art limit #{pagestart}, #{pageend}) ar
+
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+

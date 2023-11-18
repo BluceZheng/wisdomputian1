@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.BannerMapper">
+
+    <!-- 获取所有的广告图 -->
+    <select id="selectAllBanner" resultType="com.haomeng.wisdomputian.bean.Banner"
+            parameterType="com.haomeng.wisdomputian.bean.PageParam">
+        select *
+        from banner
+        where isdelete !=1
+        order by sort asc limit #{pagestart}, #{pageend}
+    </select>
+
+    <!--    -->
+    <select id="SearchAllDeletedBanner" resultType="com.haomeng.wisdomputian.bean.Banner"
+            parameterType="com.haomeng.wisdomputian.bean.PageParam">
+        select *
+        from banner
+        where isdelete !=0
+        order by sort asc limit #{pagestart}, #{pageend}
+    </select>
+
+    <!-- 获取广告数量 -->
+    <select id="ObtainSum" resultType="long">
+        select count(id)
+        from banner
+        where isdelete != 1
+    </select>
+
+    <!--  逻辑删除广告信息  -->
+    <update id="LogicDeleteBanner" parameterType="com.haomeng.wisdomputian.bean.Banner">
+        update banner
+        set isdelete=1
+        where id = #{id}
+    </update>
+
+    <!--  更新广告数据  -->
+    <update id="UpdateBanner" parameterType="com.haomeng.wisdomputian.bean.Banner">
+        update banner
+        set title = #{title},
+        link=#{link},
+        status =#{status},
+        <if test="picture != null">
+            picture=#{picture},
+        </if>
+        sort = #{sort}
+        where id = #{id}
+    </update>
+
+    <!-- 获取广告信息byid  -->
+    <select id="SearchSimpleBanner" parameterType="String" resultType="com.haomeng.wisdomputian.bean.Banner">
+        select *
+        from banner
+        where id = #{id}
+    </select>
+
+    <!--  还原逻辑删除广告信息  -->
+    <update id="LogicDeleteBannerReject" parameterType="com.haomeng.wisdomputian.bean.Banner">
+        update banner
+        set isdelete=0
+        where id = #{id}
+    </update>
+
+    <!-- 正式删除广告信息  -->
+    <delete id="RealDeleteBanner" parameterType="com.haomeng.wisdomputian.bean.Banner">
+        delete
+        from banner
+        where id = #{id}
+    </delete>
+
+    <!-- 添加广告信息  -->
+    <insert id="AddBanner" parameterType="com.haomeng.wisdomputian.bean.Banner">
+        insert into banner (id, link, title, sort, picture, status)
+        values (#{id}, #{link}, #{title}, #{sort}, #{picture}, #{status})
+    </insert>
+
+</mapper>
+
+
+
+
+
+
+
+

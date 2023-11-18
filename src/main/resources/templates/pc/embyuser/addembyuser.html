@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加Emby系统</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/goods.css}" media="all">
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:">Emby管理</a>
+                      <a href="javascript:history.back(-1);window.close();">Emby用户</a>
+                      <a href="javascript:window.location.reload();"><cite>添加Emby用户</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-header">
+                </div>
+
+                <div class="layui-card-body">
+                    <form class="layui-form">
+                        <!-- 系统名称 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-inline layui-col-m">
+                                <input type="text" autocomplete="off" class="layui-input "
+                                       id="username" name="username">
+                            </div>
+
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="pwd" name="pwd" value="">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">系统标识</label>
+                            <div class="layui-input-inline ">
+                                <select id="sysflag" name="sysflag" lay-filter="sysflag">
+                                    <option value="-1">--未选择--</option>
+                                </select>
+                            </div>
+
+
+
+                            <label class="layui-form-label">到期日</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input"
+                                       id="duetime" name="duetime" placeholder="yyyy-MM-dd HH:mm:ss" >
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+    layui.use(['form', 'layer', 'layedit', 'upload', 'element','laydate'], function () {
+        var form = layui.form;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#duetime' //指定元素
+            ,type: 'datetime'
+        });
+        //获取系统标识
+        sysFlag(form);
+
+        form.on('submit(tijiao)', function (data) {
+            console.log(data.field);
+            $.ajax({
+                type: "POST"
+                , dataType: "json"
+                , url: "/emby/addembysysinfo"
+                , data: data.field
+                , success: function (sucdata) {
+                    var erroCode = sucdata.erroCode;
+                    var errorMessage = sucdata.errorMessage;
+                    var backData = sucdata.backData;
+                    layer.msg(errorMessage);
+                    if (erroCode != 200) {
+                        return;
+                    }
+                    setTimeout(function () {
+                        history.back(-1);
+                        window.close();
+                    }, 2000);
+                }
+                , error: function (errdata) {
+                    console.log(errdata);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+
+    //获取系统标识
+    function sysFlag(form) {
+        $.ajax({
+            url: '/emby/SearchActiveEmbyInfoList',
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                var code = data.erroCode;
+                if (code == 200) {
+                    //获取返回的数据
+                    var backData = data.backData;
+                    var str = "";
+                    for (var i = 0; i < backData.length; i++) {
+                        str += '<option value="' + backData[i].id + '">' + backData[i].sysname + '</option>';
+                    }
+                    $("#sysflag").append(str);
+                    form.render();
+                } else {
+
+                }
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>

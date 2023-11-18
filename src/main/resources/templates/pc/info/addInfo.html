@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加资讯</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/upload.css}" media="all">
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                     <span class="layui-breadcrumb">
+                      <a href="javaScript:;">系统管理</a>
+                      <a href="javascript:history.back(-1);window.close();">应用信息</a>
+                      <a href="javascript:window.location.reload();"><cite>添加应用</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-body">
+
+                    <form class="layui-form" id="infoform">
+                        <div class="layui-form-item">
+                            <div class="layui-inline"></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">应用appid</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="appid">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">应用logo</label>
+                            <div class="layui-input-block layui-upload" id="reloadShowImg">
+                                <button type="button" class="layui-btn" id="addshowimg">添加logo</button>
+                                <button type="button" class="layui-btn layui-btn-primary" style="display: none"
+                                        id="uploadshowimg">上传logo
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-disabled" style="display: none"
+                                        id="doneshowimg">上传成功
+                                </button>
+                            </div>
+                            <label class="layui-form-label"></label>
+                            <div class="layui-upload-list layui-input-block " id="showimglist"></div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">微信号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="wchat">
+                            </div>
+                            <label class="layui-form-label">QQ</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="qq">
+                            </div>
+                            <label class="layui-form-label">电子邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="email">
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">app名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="appname">
+                            </div>
+                            <label class="layui-form-label">app版本</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="appversion">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">公司名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" name="company_name">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">公司地址</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="company_address">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item" style="display: none">
+                            <div class="layui-inline" id="pictures"></div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- layui 配置 -->
+<script type="text/javascript">
+    layui.use(['form', 'upload', 'element'], function () {
+        var $ = layui.jquery;
+        var form = layui.form, layer = layui.layer;
+
+        form.on('submit(tijiao)', function (data) {
+            $.ajax({
+                type: "POST"
+                , dataType: "json"
+                , url: "/info/add/addnewinfo"
+                , data: $("#infoform").serialize()
+                , success: function (sucdata) {
+                    var erroCode = sucdata.erroCode;
+                    var errorMessage = sucdata.errorMessage;
+                    var backData = sucdata.backData;
+                    layer.msg(errorMessage);
+                    if (erroCode != 200) {
+                        return;
+                    }
+                    setTimeout(function () {
+                        history.back(-1);
+                        window.close();
+                    }, 2000);
+                }
+                , error: function (errdata) {
+                    console.log(errdata);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+
+        //封面图片上传
+        layui.upload.render({
+            elem: '#addshowimg'
+            , url: '/fileUpload' //改成您自己的上传接口
+            , multiple: true
+            , accept: "images"//直接收图片文件
+            , auto: false//选择文件之后不直接上传
+            , bindAction: "#uploadshowimg"//指定按钮上传
+            , choose: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#showimglist').append('<img src="' + result + '" alt="' + file.name + '" class="layui-upload-img showviewimg">')
+                });
+                $("#addshowimg").text("继续添加");
+                $("#uploadshowimg").css("display", "");
+            }
+            , done: function (res) {
+                $("#addshowimg").css("display", "none");
+                $("#uploadshowimg").css("display", "none");
+                $("#doneshowimg").css("display", "");
+                $("#pictures").append('<input type="hidden" autocomplete="off" class="layui-input" name="appicon" value="' + res.path + '" >');
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var reloadShowImg = $('#reloadShowImg');
+                reloadShowImg.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                reloadShowImg.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        })
+    })
+</script>
+</body>
+</html>

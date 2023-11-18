@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <script type="text/javascript" th:src="@{js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/iconfont/iconfont.css}">
+
+    <style>
+        .layui-table-cell {
+            height: auto !important;
+        }
+    </style>
+</head>
+
+<body onload="searchList()">
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:;">APP管理</a>
+                      <a href="javascript:window.location.reload();"><cite>用户</cite></a>
+                    </span>
+                </div>
+                <!-- 添加用户 -->
+                <div class="layui-card-header layui-inline ">
+                    <a class="layui-btn layui-btn-normal layui-icon" href="/customers/add/addcustomer">&#xe654;新建</a>
+                    <a class="layui-btn layui-btn-normal layui-icon layui-bg-red"
+                       href="/customers/deletedcustomer">已删除</a>
+                </div>
+
+                <div class="layui-card-body">
+
+                    <table class="layui-table" id="LAY_table_user"
+                           lay-filter="LAY_table_user">
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="userTableBarEdit">
+    <a class="layui-btn layui-btn-primary layui-btn-xs layui-bg-green" lay-event="edit">编辑信息</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs layui-bg-orange" lay-event="custaddress">地址信息</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="resetpwd">密码重置</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">移除用户</a>
+</script>
+
+<script>
+    function screen() {
+        //获取当前窗口的宽度
+        var width = $(window).width();
+        if (width > 1699) {
+            return [{
+                area: ['1550px', '800px'],
+                size: "lg",
+                height: 700,
+                limit: 20
+            }]; //1920
+        } else {
+            return [{
+                area: ['970px', '670px'],
+                size: "",
+                height: 472,
+                limit: 20
+            }]; //1280
+        }
+    }
+
+    Array.prototype.removeRepeatAttrByID = function () {
+        var tmp = {},
+            a = this.slice();
+        for (var i = j = 0; i < a.length; i++) {
+            if (!tmp[a[i].id]) {
+                tmp[a[i].id] = !0;
+                j++;
+            } else {
+                this.splice(j, 1);
+            }
+        }
+    };
+
+    function searchList() {
+        layui.use(['form', 'table', 'element'], function () {
+            var form = layui.form,
+                table = layui.table;
+            table.render({
+                elem: '#LAY_table_user',
+                url: "/customers/selectallcustomer",
+                cols: [[
+                    {
+                        field: 'headportrait',
+                        title: '头像',
+                        align: "center",
+                        sort: false,
+                        width: 80,
+                        style: 'height:60px',
+                        templet: function (d) {
+                            var strhtml = '<div><img style="width: 40px;height:40px;border-radius: 40px;border:solid #aaa 0.5px" src="' + d.headportrait + '"></div>';
+                            return strhtml;
+                        }
+                    },
+                    {
+                        field: 'username',
+                        title: '用户名',
+                        width: 150,
+                    },
+                    {
+                        field: 'nickname',
+                        title: '昵称',
+                        width: 150,
+                    },
+                    {
+                        field: 'phone',
+                        title: '手机号',
+                        width: 180,
+                        align: 'center',
+                    },
+                    {
+                        field: 'wchat_openid',
+                        title: '微信凭证',
+                        width: 180,
+                        align: 'center',
+                    },
+                    {
+                        field: 'fans',
+                        title: '粉丝数',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '操作', align: "center", templet: '#userTableBarEdit'
+                    }
+
+                ]
+                ],
+                response: {
+                    statusName: 'erroCode' //规定数据状态的字段名称，默认：code
+                    , statusCode: 200 //规定成功的状态码，默认：0
+                    , msgName: 'errorMessage' //规定状态信息的字段名称，默认：msg
+                    , countName: 'dataSum' //规定数据总数的字段名称，默认：count
+                    , dataName: 'backData' //规定数据列表的字段名称，默认：data
+                },
+                id: "idTest",
+                height: screen()[0].height,
+                page: true,
+                limit: 10,
+                limits: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+            });
+
+            table.on('tool(LAY_table_user)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                console.log(data);
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+                if (layEvent === 'del') { //删除
+                    layer.confirm('确定移除行么？', function (index) {
+                        $.ajax({
+                            url: '/customers/logicdeletecustomer',
+                            type: "POST",
+                            dataType: "json",
+                            data: {"id": data.id},
+                            success: function (succdata) {
+                                debugger;
+                                var erroCode = succdata.erroCode;
+                                var errorMessage = succdata.errorMessage;
+                                layer.msg(errorMessage);
+                                if (erroCode == 200) {
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                }
+                                layer.close(index);
+                            },
+                            error: function (errdata) {
+                                console.log(errdata);
+                            }
+                        });
+                    });
+                } else if (layEvent === 'edit') { //编辑
+                    location.href = "/customers/edit/editcustomer?customerid=" + data.id;
+                } else if (layEvent === 'custaddress') {//获取客户设置的地址信息
+                    location.href = "/custaddresspage?custaddressid=" + data.id;
+                }
+            });
+
+        });
+
+
+    }
+
+</script>
+</body>
+</html>

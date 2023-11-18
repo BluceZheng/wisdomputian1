@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改</title>
+
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+
+    <script type="text/javascript" th:src="@{/js/threelevellinkage/area.js}"></script>
+    <script type="text/javascript" th:src="@{/js/threelevellinkage/locationJson.js}"></script>
+    <script type="text/javascript" th:src="@{/js/threelevellinkage/select2.js}"></script>
+    <script type="text/javascript" th:src="@{/js/threelevellinkage/select2_locale_zh-CN.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/css/upload.css}" media="all">
+
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:">系统管理</a>
+                      <a href="javascript:history.back(-1);window.close();">区域</a>
+                      <a href="javascript:window.location.reload();"><cite>区域修改</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-body">
+                    <form class="layui-form" id="regionform">
+
+                        <!-- 区域id -->
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input type="hidden" id="id" name="id" th:value="${regionid}">
+                            </div>
+                        </div>
+
+                        <!-- 区域名称 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">地址全称</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" readonly class="layui-input" placeholder="地址全称"
+                                       id="addrdetails" name="addrdetails">
+                            </div>
+                        </div>
+
+                        <!-- 地址简称 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">地址简称</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" placeholder="地址简称"
+                                       id="abbreviation" name="abbreviation">
+                            </div>
+                        </div>
+
+                        <!-- 省市区 按钮"获取经纬度"-->
+                        <div class="layui-form-item">
+                            <!--省-->
+                            <div class="layui-inline">
+                                <label class="layui-form-label">地址省</label>
+                                <div class="layui-input-inline">
+                                    <select id="loc_province" name="province" lay-filter="province">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!--市-->
+                            <div class="layui-inline">
+                                <label class="layui-form-label">地址市</label>
+                                <div class="layui-input-inline">
+                                    <select id="loc_city" name="city" lay-filter="city">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!--区-->
+                            <div class="layui-inline">
+                                <label class="layui-form-label">地址区</label>
+                                <div class="layui-input-inline">
+                                    <select id="loc_town" name="area" lay-filter="area">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!--获取经纬度-->
+                            <div class="layui-inline">
+                                <label class="layui-form-label"></label>
+                                <button id="getlonlat" type="button" class="layui-btn" onclick="AddrToLonLat()">获取经纬度
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- 详细地址-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">详细地址</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" placeholder="请输入详细地址"
+                                       id="address" name="address">
+                            </div>
+                        </div>
+
+                        <!-- 经度、纬度-->
+                        <div class="layui-form-item">
+                            <!--经度-->
+                            <div class="layui-inline">
+                                <label class="layui-form-label">经度</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" readonly class="layui-input" placeholder="经度"
+                                           id="lon" name="lon">
+                                </div>
+                            </div>
+
+                            <!--纬度-->
+                            <div class="layui-inline">
+                                <label class="layui-form-label">纬度</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" readonly class="layui-input" placeholder="纬度"
+                                           id="lat" name="lat">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var layer;
+    var form;
+
+    $(document).ready(function () {
+        layui.use(['form', 'layer', 'element'], function () {
+            form = layui.form;
+            layer = layui.layer;
+
+            form.on('submit(tijiao)', function (data) {
+                $.ajax({
+                    type: "POST"
+                    , dataType: "json"
+                    , url: "/regions/updateregion"
+                    , data: $("#regionform").serialize()
+                    , success: function (sucdata) {
+                        var erroCode = sucdata.erroCode;
+                        var errorMessage = sucdata.errorMessage;
+                        var backData = sucdata.backData;
+                        if (erroCode != 200) {
+                            layer.msg(errorMessage);
+                            return;
+                        }
+                        setTimeout(function () {
+                            history.back(-1);
+                            window.close();
+                        }, 2000);
+                    }
+                    , error: function (errdata) {
+                        console.log(errdata);
+                    }
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+            //获取单独分类数据
+            getclassflyById();
+        });
+    });
+
+    //获取区域数据
+    function getclassflyById() {
+        $.ajax({
+            url: "/regions/searchsimpleregion"
+            , type: "POST"
+            , dataType: "json"
+            , data: {
+                "regionid": $("#id").val()
+            }
+            , success: function (succdata) {
+                var erroCode = succdata.erroCode;
+                var errorMessage = succdata.errorMessage;
+                var backData = succdata.backData;
+
+                if (erroCode != 200) {
+                    layer.msg(errorMessage);
+                    return;
+                }
+
+                //区域名称
+                $("#addrdetails").val(backData.addrdetails);
+                //地址简称
+                $("#abbreviation").val(backData.abbreviation);
+
+                //设置省市区
+                loadLocation(form, backData.province, backData.city, backData.area);
+
+                //详细地址
+                $("#address").val(backData.address);
+                //经度
+                $("#lon").val(backData.lon);
+                //纬度
+                $("#lat").val(backData.lat);
+
+            }
+            , error: function (errdta) {
+                console.log(errdta);
+            }
+        })
+    }
+
+    //地址获取经纬度
+    function AddrToLonLat() {
+        var province = $("#loc_province option:selected").text();
+        var city = $("#loc_city option:selected").text();
+        var area = $("#loc_town option:selected").text();
+        var address = $("#address").val();
+        //地址全称
+        var addrdetails = province + city + area + address;
+
+        //地址简称
+        var abbreviation = province.split('省')[0] +' '+ city.split('市')[0] +' '+ area.split('区')[0] +' '+ address;
+
+        //设置地址全称
+        $("#addrdetails").val(addrdetails);
+
+        //设置地址简称
+        $("#abbreviation").val(abbreviation);
+
+        $.ajax({
+            url: '/baiduapis/addresstolnglat',
+            type: "POST",
+            dataType: "json",
+            data: {"address": addrdetails},
+            success: function (succdata) {
+                debugger;
+                var erroCode = succdata.erroCode;
+                var backData = succdata.backData;
+                if (erroCode != 200) {
+
+                }
+                var lat = backData.lat;//纬度
+                var lng = backData.lng;//经度
+                $("#lat").val(lat);
+                $("#lon").val(lng);
+            },
+            error: function (errdata) {
+                console.log(errdata);
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

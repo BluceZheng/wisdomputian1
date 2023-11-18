@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/iconfont/iconfont.css}">
+
+</head>
+<body onload="searchList()">
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:;">系统管理</a>
+                      <a href="javascript:window.location.reload();"><cite>区域</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-header layui-row">
+                    <div class="layui-inline  layui-col-md">
+                        <a id="add" class="layui-btn layui-btn-normal layui-icon" type="button"
+                           href="/shop/add/addshop">&#xe654;添加</a>
+                    </div>
+                </div>
+
+                <div class="layui-card-body">
+                    <table class="layui-table" id="LAY_table_user" lay-filter="LAY_table_user"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="editTableBarEdit">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" href="/banner/edit/editbanner?bannerid={{d.id}}">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="delPop({{d.id}})">删除</a>
+</script>
+
+<script>
+
+    function screen() {
+        //获取当前窗口的宽度
+        var width = $(window).width();
+        if (width > 1699) {
+            return [{
+                area: ['1550px', '800px'],
+                size: "lg",
+                height: 700,
+                limit: 20
+            }]; //1920
+        } else {
+            return [{
+                area: ['970px', '670px'],
+                size: "",
+                height: 472,
+                limit: 20
+            }]; //1280
+        }
+    }
+
+    Array.prototype.removeRepeatAttrByID = function () {
+        var tmp = {},
+            a = this.slice();
+        for (var i = j = 0; i < a.length; i++) {
+            if (!tmp[a[i].id]) {
+                tmp[a[i].id] = !0;
+                j++;
+            } else {
+                this.splice(j, 1);
+            }
+        }
+    };
+
+    function searchList() {
+        layui.use(['form', 'table', 'element'], function () {
+            var form = layui.form,
+                table = layui.table;
+
+            $.ajax({
+                type: "POST",
+                url: "/banners/getbanners",
+                dataType: "json",
+                async: false,
+                success: function (sucdata) {
+                    console.log(sucdata);
+                    var erroCode = sucdata.erroCode;
+                    if (erroCode != 200) {
+                        layer.msg(sucdata.errorMessage);
+                        jdata = [];
+
+                    } else {
+                        jdata = sucdata.backData;
+                    }
+                }
+            });
+
+            table.render({
+                elem: '#LAY_table_user',
+                data: jdata,
+                cols: [[
+                    {
+                        field: 'picture', title: '主图', align: "left", sort: false, minWidth: 300,
+                        templet: function (d) {
+                            var strhtml = '<div ><img style="width: 300px;height:300px;" src="/' + d.picture + '"></div>';
+                            return strhtml;
+                        }
+                    },
+                    {
+                        field: 'link',
+                        title: '链接',
+                        minWidth: 250,
+                        templet: function (d) {
+                            return "<a  href='" + d.link + "'  target='_blank' > " + d.link + "</a>";
+                        }
+                    },
+                    {
+                        field: 'title',
+                        title: '标题',
+                        minWidth: 300,
+                    },
+                    {
+                        field: 'sort',
+                        title: '排序',
+                        align: 'center',
+                        minWidth: 200,
+                    },
+                    {
+                        field: 'status',
+                        title: '状态',
+                        align: 'center',
+                        minWidth: 200,
+                        templet: function (e) {
+                            if (e.status == 0) {
+                                return "隐藏";
+                            } else {
+                                return "显示";
+                            }
+
+                        }
+                    },
+                    {
+                        title: '操作', align: "center", templet: '#editTableBarEdit'
+                    }
+                ]
+                ],
+                id: "idTest",
+                height: screen()[0].height,
+                page: true,
+                limit: 20,
+                limits: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+            });
+
+        });
+    }
+
+    function delPop(data) {
+        layer.open({
+            type: 1
+            ,
+            title: false //不显示标题栏
+            ,
+            closeBtn: false
+            ,
+            area: '300px;'
+            ,
+            shade: 0.8
+            ,
+            id: 'LAY_layuipro' //设定一个id，防止重复弹出
+            ,
+            btn: ['确定删除', '还没考虑好']
+            ,
+            yes: function (index, layero) {
+                //确定删除
+                $.ajax({
+                    type: "POST",
+                    url: "/banners/banner/deletebanner",
+                    data: {
+                        "id": data
+                    },
+                    dataType: "json",
+                    success: function (sucdata) {
+                        var erroCode = sucdata.erroCode;
+                        var errorMessage = sucdata.errorMessage;
+                        if (erroCode == 200) {
+                            location.reload();
+                        }
+                        layer.msg(errorMessage);
+                    },
+                    error: function () {
+                        layui.use(['layer'], function () {
+                            var layer = layui.layer;
+                            layer.alert('删除失败');
+                        });
+                        location.reload();
+                    }
+                });
+            },
+            btnAlign: 'c'
+            ,
+            moveType: 0 //拖拽模式，0或者1
+            ,
+            content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">你知道吗？亲！<br>你的操作将不可挽回！<br><br>你确定要删除这条数据<br><br>删除后将没有办法恢复</div>'
+        });
+    }
+
+</script>
+</body>
+</html>

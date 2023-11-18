@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haomeng.wisdomputian.mapper.PhotosMapper">
+
+
+    <!--  新建图片  -->
+    <insert id="AddPhotos" parameterType="com.haomeng.wisdomputian.bean.Photos">
+        insert into photos (id, linkid, path, name, size)
+        values (#{id}, #{linkid}, #{path}, #{name}, #{size})
+    </insert>
+
+    <!--  查找图片信息 by linkid -->
+    <select id="SearchPhotosByLinkId" resultType="com.haomeng.wisdomputian.bean.Photos"
+            parameterType="com.haomeng.wisdomputian.bean.Photos">
+        select *
+        from photos
+        where linkid = #{linkid}
+    </select>
+
+    <!-- 查找图片信息  by id  -->
+    <select id="SearchPhotosById" resultType="com.haomeng.wisdomputian.bean.Photos" parameterType="String">
+        select *
+        from photos
+        where id = #{id}
+    </select>
+
+    <!-- 更新linkid by id   -->
+    <update id="UpdatePhotosById" parameterType="com.haomeng.wisdomputian.bean.Photos">
+        update photos
+        set linkid = #{linkid}
+        where id = #{id}
+    </update>
+
+</mapper>
+
+
+
+
+
+
+
+

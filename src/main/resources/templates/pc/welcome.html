@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>云天ERP</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport"
+		  content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<script src="js/jquery-3.3.1.js"></script>
+	<script src="js/echarts.min.js"></script>
+	<link rel="stylesheet" href="layuiadmin/layui/css/layui.css"
+		  media="all">
+	<link rel="stylesheet" href="layuiadmin/style/admin.css"
+		  media="all">
+	<script src="layuiadmin/layui/layui.js"></script>
+	<script>
+		layui.config({
+			base : 'layuiadmin/' //静态资源所在路径
+		}).extend({
+			index : 'lib/index' //主入口模块
+		}).use('index1.html');
+	</script>
+	<link rel="stylesheet" href="css/console.css">
+	<style>
+		.diycard {
+			position: relative;
+		}
+
+		#div1 .layui-btn-group, #div2 .layui-btn-group, #div3 .layui-btn-group, #div6 .layui-btn-group {
+			position: absolute;
+			top: 15px;
+			right: 15px;
+		}
+
+		.layui-layer-diy {
+			border-right: 15px solid #ffffff00;
+		}
+	</style>
+</head>
+<body onload="selectdate()">
+<div class="layui-fluid" style="padding: 20px 5% 0 5%">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-sm9">
+			<div class="layui-row layui-col-space20">
+				<div class="layui-col-sm3">
+					<div class="layui-card Gradients1" style="height: 100px">
+						<div class="layui-card-header">
+							<i class="layui-icon layui-icon-template-1"
+							   style="color:#fff;right: 0;left: 15px"></i>
+						</div>
+						<div class="layui-card-body layuiadmin-card-list"
+							 style="text-align:center;padding:0">
+
+							<span style="font-size: 14px;color: #fff">今日销售笔数</span> <br />
+							<span style="font-size: 20px;font-weight: bold;color: #fff"
+								  id="Todaysale"> </span> <a lay-href='saledate.jsp?date=1'
+															 style="position: absolute;top:0;left: 0;width:100%;height:100%">
+							<div style="display:none">销售单</div>
+						</a>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-sm3">
+					<div class="layui-card Gradients2" style="height: 100px">
+						<div class="layui-card-header">
+							<i class="layui-icon layui-icon-template-1"
+							   style="color:#fff;right: 0;left: 15px"></i>
+						</div>
+						<div class="layui-card-body layuiadmin-card-list"
+							 style="text-align:center;padding:0">
+							<span style="font-size: 14px;color: #fff">今日采购笔数</span> <br />
+							<span style="font-size: 20px;font-weight: bold;color: #fff"
+								  id="TodayPwh"></span> <a lay-href='putin.jsp?date=1'
+														   style="position: absolute;top:0;left: 0;width:100%;height:100%">
+							<div style="display:none">入库单</div>
+						</a>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-sm3">
+					<div class="layui-card Gradients3" style="height: 100px">
+						<div class="layui-card-header">
+							<i class="layui-icon layui-icon-template-1"
+							   style="color:#fff;right: 0;left: 15px"></i>
+						</div>
+						<div class="layui-card-body layuiadmin-card-list"
+							 style="text-align:center;padding:0">
+							<span style="font-size: 14px;color: #fff">库存预警</span> <br /> <span
+								style="font-size: 20px;font-weight: bold;color: #fff"
+								id="goodn"></span> <a lay-href='stock1.jsp'
+													  style="position: absolute;top:0;left: 0;width:100%;height:100%">
+							<div style="display:none">库存预警</div>
+						</a>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-sm3">
+					<div class="layui-card Gradients4" style="height: 100px">
+						<div class="layui-card-header">
+							<i class="layui-icon layui-icon-template-1"
+							   style="color:#fff;right: 0;left: 15px"></i>
+						</div>
+						<div class="layui-card-body layuiadmin-card-list"
+							 style="text-align:center;padding:0">
+							<span style="font-size: 14px;color: #fff">会员生日提醒</span> <br />
+							<span style="font-size: 20px;font-weight: bold;color: #fff"
+								  id="brithdayn"></span> <a lay-href='customth1.jsp'
+															style="position: absolute;top:0;left: 0;width:100%;height:100%">
+							<div style="display:none">会员生日提醒</div>
+						</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-sm3">
+			<div class="layui-card Gradients5">
+				<div class="layui-card-body layuiadmin-card-list">
+					<span style="font-size: 16px;color: #fff">通知</span> <br /> <span
+						style="font-size: 14px;color: #fff"> 恭祝大家新春快乐！ </span>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-sm9">
+			<div class="layui-card">
+				<div class="layui-card-header" style="padding:0 0 10px 0;">
+					<h4 class="box-title"
+						style="border-left: 4px solid #000;padding-left: 10px;margin-bottom: 12px;
+                        font-size: 1.5rem;font-weight: bold;">
+						数据统计</h4>
+				</div>
+				<div class="diycard layui-card-body layuiadmin-card-list">
+					<div>
+						<button id="btn1" class="layui-btn"
+								style="background-color: #4FCFAE;border-radius: 3px">销售
+						</button>
+						<button id="btn2" class="layui-btn"
+								style="background-color: #B8B8B8;border-radius: 3px">客户
+						</button>
+						<button id="btn3" class="layui-btn"
+								style="background-color: #B8B8B8;border-radius: 3px">商品
+						</button>
+						<button id="btn6" class="layui-btn"
+								style="background-color: #B8B8B8;border-radius: 3px">分类
+						</button>
+					</div>
+					<div id="div1" style="display: block;height:362px;">
+						<div class="layui-btn-group layuiadmin-btn-group">
+							<div class="layui-btn layui-btn-primary layui-btn-xs"
+								 style="background-color: #fff;border-width: 0">
+								<select id='date' class="form-control" onchange="selectdate()">
+									<option value="1">近七天</option>
+									<option value="7">近七周</option>
+									<option value="30">近七月</option>
+								</select>
+							</div>
+						</div>
+						<div id="main" style="height:332px;"></div>
+					</div>
+					<div id="div2" style="height:362px;display: none;">
+						<div class="layui-btn-group layuiadmin-btn-group">
+							<div class="layui-btn layui-btn-primary layui-btn-xs"
+								 style="background-color: #fff;border-width: 0">
+								<select id='client' class="form-control"
+										onchange="selectclient()">
+									<option value="1">昨日</option>
+									<option value="7">本周</option>
+									<option value="30">本月</option>
+								</select>
+							</div>
+						</div>
+						<div class="card-body" id='cli' style="height:332px"></div>
+					</div>
+					<div id="div3" style="height:362px;display: none;">
+						<div class="layui-btn-group layuiadmin-btn-group">
+							<div class="layui-btn layui-btn-primary layui-btn-xs"
+								 style="background-color: #fff;border-width: 0">
+								<select id='goods' name="goods" class="form-control"
+										onchange="selectgoods()">
+									<option value="1">昨日</option>
+									<option value="7">本周</option>
+									<option value="30">本月</option>
+								</select>
+							</div>
+						</div>
+						<div class="card-body" id='com' style="height:332px"></div>
+					</div>
+					<div id="div6" style="height:362px;display: none;">
+						<div class="layui-btn-group layuiadmin-btn-group">
+							<div class="layui-btn layui-btn-primary layui-btn-xs"
+								 style="background-color: #fff;border-width: 0">
+								<select name="classid" id='classid' class="form-control"
+										onchange="selectclassid()">
+									<option value="1">昨日</option>
+									<option value="7">本周</option>
+									<option value="30">本月</option>
+								</select>
+							</div>
+						</div>
+						<div class="card-body" id='classify' style="height:332px">
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-sm3">
+			<div class="layui-card">
+				<div class="layui-card-header"
+					 style="text-align: center;padding-bottom: 10px;">
+					<div>
+						<button id='btn4' class="layui-btn"
+								style="border-bottom: 4px solid #4FCFAE;background-color: transparent;
+                                border-radius: 0;color:#4FCFAE;font-size: 16px">
+							常用功能</button>
+						<button id='btn5' class="layui-btn"
+								style="border-bottom: 4px solid #ffffff;background-color: transparent;
+                                border-radius: 0;color:#B8B8B8;font-size: 16px">
+							财务数据</button>
+					</div>
+				</div>
+				<div id='div4' class="diycard layui-card-body layuiadmin-card-list"
+					 style="display: block">
+					<div style="height: 400px">
+						<div class="layui-carousel layadmin-carousel layadmin-shortcut"
+							 style="padding: 20px 20px 20px 0">
+							<ul class="layui-row layui-col-space30">
+								<li class="layui-col-xs4"><a lay-href="saledate.jsp">
+									<i class="layui-icon layui-icon-note"></i> <cite>销售单</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="receiptfind.jsp">
+									<i class="layui-icon layui-icon-rmb"></i> <cite>收款单</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="rejected.jsp">
+									<i class="layui-icon layui-icon-return"></i> <cite>退货单</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="purchaseth.jsp">
+									<i class="layui-icon layui-icon-file-b"></i> <cite>采购申请单</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="putin.jsp"> <i
+										class="layui-icon layui-icon-home"></i> <cite>采购入库单</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="paymentfind.jsp">
+									<i class="layui-icon layui-icon-rmb"></i> <cite>付款单</cite>
+								</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div id='div5' class="diycard layui-card-body layuiadmin-card-list"
+					 style="display: none">
+					<div style="height: 400px">
+						<div class="layui-carousel layadmin-carousel layadmin-shortcut"
+							 style="padding: 20px 20px 20px 0">
+							<ul class="layui-row layui-col-space30">
+								<li class="layui-col-xs4"><a lay-href="checkfrom.jsp">
+									<i class="layui-icon layui-icon-survey"></i> <cite>盘点表</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="transferbank.jsp">
+									<i class="layui-icon layui-icon-chart"></i> <cite>账号转账</cite>
+								</a></li>
+								<li class="layui-col-xs4"><a lay-href="dailyreport.jsp">
+									<i class="layui-icon layui-icon-form"></i> <cite>日报表</cite>
+								</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script>
+	layui.use('element', function() {
+		var $ = layui.jquery,
+				element = layui.element;
+		$.ajax({
+			type : "POST",
+			url : 'welcomePage',
+			dataType : "json",
+			async : true,
+			success : function(data) {
+				$("#ALLsale").html(data.ALLsale);
+				$("#Todaysale").html(data.Todaysale);
+				$("#AllPwh").html(data.AllPwh);
+				$("#TodayPwh").html(data.TodayPwh);
+				$("#AllSup").html(data.AllSup);
+				duetime = data.duetime;
+				url = data.url;
+				if (duetime !== "" && duetime !== undefined) {
+					layui.use('layer', function() {
+						var layer = layui.layer;
+						layer.open({
+							type : 1,
+							shade : false,
+							title : false,
+							skin : 'layui-layer-diy', //加上边框
+							area : [ '320px', '232px' ],
+							offset : 'rb',
+							anim : 2,
+							scrollbar : false,
+							content : '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\n' +
+									'        到期时间<br>\n' +
+									'        ' + duetime + '<br><br>\n' +
+									'        若需续费可点击下方链接前往续费<br><br>\n' +
+									'        <a style="color: #01AAED;" href="' + url + '" target="_blank">点击续费</a>\n' +
+									'    </div>',
+						});
+					})
+				}
+			}
+		});
+
+
+	});
+</script>
+<script type="text/javascript">
+
+
+
+	$('#btn1').on('click', function() {
+		$("#btn1").css("background-color", "#4FCFAE");
+		$("#btn2").css("background-color", "#B8B8B8");
+		$("#btn3").css("background-color", "#B8B8B8");
+		$("#btn6").css("background-color", "#B8B8B8");
+		$("#div1").fadeIn(300);
+		$("#div2").fadeOut(300);
+		$("#div3").fadeOut(300);
+		$("#div6").fadeOut(300);
+	});
+	$('#btn2').on('click', function() {
+		$("#btn1").css("background-color", "#B8B8B8");
+		$("#btn2").css("background-color", "#4FCFAE");
+		$("#btn3").css("background-color", "#B8B8B8");
+		$("#btn6").css("background-color", "#B8B8B8");
+		$("#div1").fadeOut(300);
+		$("#div2").fadeIn(300);
+		$("#div3").fadeOut(300);
+		$("#div6").fadeOut(300);
+		selectclient();
+	});
+	$('#btn3').on('click', function() {
+		$("#btn1").css("background-color", "#B8B8B8");
+		$("#btn2").css("background-color", "#B8B8B8");
+		$("#btn3").css("background-color", "#4FCFAE");
+		$("#btn6").css("background-color", "#B8B8B8");
+		$("#div1").fadeOut(300);
+		$("#div2").fadeOut(300);
+		$("#div6").fadeOut(300);
+		$("#div3").fadeIn(300);
+		selectgoods();
+	});
+	$('#btn6').on('click', function() {
+		$("#btn1").css("background-color", "#B8B8B8");
+		$("#btn2").css("background-color", "#B8B8B8");
+		$("#btn6").css("background-color", "#4FCFAE");
+		$("#btn3").css("background-color", "#B8B8B8");
+		$("#div1").fadeOut(300);
+		$("#div2").fadeOut(300);
+		$("#div3").fadeOut(300);
+		$("#div6").fadeIn(300);
+		selectclassid();
+	});
+
+
+	$('#btn4').on('click', function() {
+		$("#btn4").css({
+			"color" : "#4FCFAE"
+		}, {
+			"border-bottom" : "4px solid rgb(79, 207, 174)"
+		});
+		$("#btn5").css({
+			"color" : "#B8B8B8"
+		}, {
+			"border-bottom" : "4px solid #fff"
+		});
+		$("#div4").fadeIn(300);
+		$("#div5").fadeOut(300);
+	});
+	$('#btn5').on('click', function() {
+		$("#btn4").css({
+			"color" : "#B8B8B8"
+		}, {
+			"border-bottom" : "4px solid #fff"
+		});
+		$("#btn5").css({
+			"color" : "#4FCFAE"
+		}, {
+			"border-bottom" : "4px solid rgb(79, 207, 174)"
+		});
+		$("#div4").fadeOut(300);
+		$("#div5").fadeIn(300);
+	});
+	function fun_date(aa) {
+		time3 = [];
+		var date1 = new Date(),
+				time1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate(); //time1表示当前时间
+		var date2 = new Date(date1);
+		date2.setDate(date1.getDate() + aa);
+		var time2 = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate();
+		time3.push(time1, time2);
+		return time3
+	}
+
+	function buildcharts(titlename, a, b) {
+		var myChart = echarts.init(document.getElementById('main'));
+		var option = {
+			title : {
+				text : titlename
+			},
+			color : "#4FCFAE",
+			tooltip : {
+				trigger : 'axis',
+				axisPointer : { // 坐标轴指示器，坐标轴触发有效
+					type : 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+				}
+			},
+			grid : {
+				left : '3%',
+				right : '4%',
+				bottom : '3%',
+				containLabel : true
+			},
+			legend : {
+				data : [ '销售金额(元)' ]
+			},
+			xAxis : [
+				{
+					type : 'category',
+					data : a,
+					boundaryGap : true
+				}
+			],
+			yAxis : [
+				{
+					type : 'value'
+				}
+			],
+			series : [
+				{
+					name : '销售金额(元)',
+					type : 'bar',
+					stack : '总量',
+					barWidth : 30,
+					data : b
+				}
+			]
+		};
+		myChart.setOption(option);
+	}
+	function selectclassify(x,comname) {
+		$.ajax({
+			type : "POST",
+			url : 'classifyscalebywel',
+			dataType : "json",
+			data : {
+				x : x
+			},
+			async : true,
+			success : function(data) {
+				console.log(data);
+				var classname = [];
+				var seriesData = [];
+				for (i = 0; i < data.length; i++) {
+					classname.push({
+						"name": data[i].name,
+					});
+					seriesData.push({
+						"name": data[i].name,
+						"value": data[i].vipprice,
+					});
+				}
+				var myChart = echarts.init(document.getElementById('classify'));
+				option = {
+					title : {
+						text: comname,
+						x:'center'
+					},
+					tooltip : {
+						trigger: 'item',
+						formatter: "{a} <br/>{b} : {c} ({d}%)"
+					},
+					legend: {
+						type: 'scroll',
+						orient: 'vertical',
+						right: 10,
+						top: 0,
+						bottom: 0,
+						data: classname,
+					},
+					series : [
+						{
+							name: '分类',
+							type: 'pie',
+							radius : '75%',
+							center: ['50%', '60%'],
+							data: seriesData,
+							itemStyle: {
+								emphasis: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+				};
+				myChart.setOption(option);
+
+
+
+			}
+		});
+
+	}
+	function selectclassid() {
+		x = $('#classid').val();
+		comname = "昨日 分类销售占比统计";
+		if (x == 7) {
+			comname = "本周 分类销售占比统计";
+		} else if (x == 30) {
+			comname = "本月 分类销售占比统计";
+		}
+
+
+		selectclassify(x,comname);
+
+
+
+
+	}
+
+
+
+	function selectgoods() {
+		x = $('#goods').val();
+		comname = "昨日 商品销售排行";
+		if (x == 7) {
+			comname = "本周 商品销售排行";
+		} else if (x == 30) {
+			comname = "本月 商品销售排行";
+		}
+		$.ajax({
+			type : "POST",
+			url : 'welcomcount',
+			dataType : "json",
+			data : {
+				v : x
+			},
+			async : true,
+			success : function(data) {
+				str = '<div class="traffic-table1">';
+				str += '<p>' + comname + '</p><div class="money_cont" style="overflow-y:auto">';
+				for (i = 0, len = data.length; i < len; i++) {
+					if (i == 0)
+						str += '<div class="money_cont_left" style="width:100%">';
+					if (i == 5)
+						str += '<div class="money_cont_left" style="width:100%">';
+					str += '<div class="money_cont_line">';
+					str += '<img src="static/images/n' + i + '.png" alt="">';
+					str += '<span class="span_o">' + data[i].storename + '</span>';
+					str += '<span class="span_t" style="width:200px">￥' + (data[i].addmoney).toFixed(2) + '</span>';
+					str += '</div>';
+					if (i == 4 || i == (data.length - 1))
+						str += '</div>';
+				}
+				str += "</div></div>";
+				$('#com').html(str);
+
+			}
+		});
+	}
+	function selectclient() {
+		x = $('#client').val();
+		cliname = "昨日客户消费排行";
+		if (x == 7) {
+			cliname = "本周 客户消费排行";
+		} else if (x == 30) {
+			cliname = "本月 客户消费排行";
+		}
+		$.ajax({
+			type : "POST",
+			url : 'welclientcount',
+			dataType : "json",
+			data : {
+				v : x
+			},
+			async : true,
+			success : function(data) {
+				str = '<div class="traffic-table1">';
+				str += '<p>' + cliname + '</p><div class="money_cont" style="overflow-y:auto">';
+				for (i = 0, len = data.length; i < len; i++) {
+					if (i == 0)
+						str += '<div class="money_cont_left" style="width:100%">';
+					if (i == 5)
+						str += '<div class="money_cont_left" style="width:100%">';
+					str += '<div class="money_cont_line">';
+					str += '<img src="static/images/n' + i + '.png" alt="">';
+					if (data[i].suplier.remark !== null && data[i].suplier.remark !== undefined && data[i].suplier.remark !== "") {
+						str += '<span class="span_o">' + data[i].supname + '(' + data[i].suplier.remark + ')' + '</span>';
+					} else {
+						str += '<span class="span_o">' + data[i].supname + '</span>';
+					}
+					str += '<span class="span_t" style="width:200px">￥' + (data[i].addmoney).toFixed(2) + '</span>';
+					str += '</div>';
+					if (i == 4 || i == (data.length - 1))
+						str += '</div>';
+				}
+				str += "</div></div>";
+				$('#cli').html(str);
+
+			}
+		});
+	}
+
+	function selectdate() {
+		x = $('#date').val();
+		titlename = "近七天 销售金额(元)";
+		if (x == 7) {
+			titlename = "近七周 销售金额(元)";
+		} else if (x == 30) {
+			titlename = "近七月 销售金额(元)";
+		}
+
+		$.ajax({
+			type : "POST",
+			url : 'welcomecount',
+			dataType : "json",
+			data : {
+				v : x
+			},
+			async : true,
+			success : function(data) {
+				a = [];
+				b = [];
+				for (i = 0, len = data.length; i < len; i++) {
+					a.push(data[i].countdate);
+					b.push(data[i].total)
+				}
+				buildcharts(titlename, a, b)
+			},
+			error : function() {
+				a = [ '无数据' ];
+				b = [];
+				buildcharts(titlename, a, b)
+			}
+		});
+
+		$.ajax({
+			type : "POST",
+			url : 'briNumber',
+			dataType : "json",
+			async : false,
+			success : function(data) {
+				$("#brithdayn").html(data);
+			}
+		});
+
+		$.ajax({
+			type : "POST",
+			url : 'goodsNumber',
+			dataType : "json",
+			async : false,
+			success : function(data) {
+				$("#goodn").html(data);
+			}
+		});
+	}
+</script>
+</html>

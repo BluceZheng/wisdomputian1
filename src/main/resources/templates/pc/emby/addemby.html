@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加Emby系统</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/goods.css}" media="all">
+</head>
+<body>
+<div class="layui-fluid" style="padding: 15px 15px 0 15px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:">Emby管理</a>
+                      <a href="javascript:history.back(-1);window.close();">Emby系统</a>
+                      <a href="javascript:window.location.reload();"><cite>添加Emby系统</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-header">
+                </div>
+
+                <div class="layui-card-body">
+                    <form class="layui-form">
+                        <!-- 系统名称 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">系统名称</label>
+                            <div class="layui-input-inline layui-col-m" >
+                                <input type="text" autocomplete="off" class="layui-input "
+                                       id="sysname" name="sysname">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">网络协议</label>
+                            <div class="layui-input-inline ">
+                                <select id="netprotocol" name="netprotocol" lay-filter="netprotocol">
+                                    <option value="http://">http</option>
+                                    <option value="https://">https</option>
+                                </select>
+                            </div>
+
+                            <label class="layui-form-label">系统地址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="sysurl" name="sysurl" value="">
+                            </div>
+
+                            <label class="layui-form-label">系统端口</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="sysport" name="sysport" value="">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">系统api调用名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="sysapiname" name="sysapiname" value="apikeyauth" disabled="">
+                            </div>
+
+                            <label class="layui-form-label">系统apikey</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                       id="sysapikey" name="sysapikey" value="">
+                            </div>
+                        </div>
+
+
+                        <!-- 活跃状态 -->
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">活跃状态</label>
+                                <div class="layui-input-inline">
+                                    <select id="isactive" name="isactive" lay-filter="isactive">
+                                        <option value="1">活跃</option>
+                                        <option value="0">停止</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-icon" lay-submit lay-filter="tijiao">&#xe681;提交</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    layui.use(['form', 'layer', 'layedit', 'upload', 'element'], function () {
+        var form = layui.form;
+        form.on('submit(tijiao)', function (data) {
+            console.log(data.field);
+            $.ajax({
+                type: "POST"
+                , dataType: "json"
+                , url: "/emby/addembysysinfo"
+                , data: data.field
+                , success: function (sucdata) {
+                    var erroCode = sucdata.erroCode;
+                    var errorMessage = sucdata.errorMessage;
+                    var backData = sucdata.backData;
+                    layer.msg(errorMessage);
+                    if (erroCode != 200) {
+                        return;
+                    }
+                    setTimeout(function () {
+                        history.back(-1);
+                        window.close();
+                    }, 2000);
+                }
+                , error: function (errdata) {
+                    console.log(errdata);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+
+</body>
+</html>

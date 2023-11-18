@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/iconfont/iconfont.css}">
+
+</head>
+<body onload="searchList()">
+<div id="app" class="layui-fluid" style="padding: 15px 15px 0 15px">
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb">
+                      <a href="javaScript:;">系统管理</a>
+                        <a href="javascript:window.history.back();"><cite>滑块</cite></a>
+                      <a href="javascript:window.location.reload();"><cite>已经删除滑块</cite></a>
+                    </span>
+                </div>
+
+                <div class="layui-card-header layui-row">
+                    <div class="layui-inline  layui-col-md">
+                    </div>
+                </div>
+
+                <div class="layui-card-body">
+                    <table class="layui-table" id="LAY_table_user" lay-filter="LAY_table_user"></table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="editTableBarEdit">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="reback">还原</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+
+    function screen() {
+        //获取当前窗口的宽度
+        var width = $(window).width();
+        if (width > 1699) {
+            return [{
+                area: ['1550px', '800px'],
+                size: "lg",
+                height: 700,
+                limit: 20
+            }]; //1920
+        } else {
+            return [{
+                area: ['970px', '670px'],
+                size: "",
+                height: 472,
+                limit: 20
+            }]; //1280
+        }
+    }
+
+    Array.prototype.removeRepeatAttrByID = function () {
+        var tmp = {},
+            a = this.slice();
+        for (var i = j = 0; i < a.length; i++) {
+            if (!tmp[a[i].id]) {
+                tmp[a[i].id] = !0;
+                j++;
+            } else {
+                this.splice(j, 1);
+            }
+        }
+    };
+
+    function searchList() {
+        layui.use(['form', 'table', 'element'], function () {
+            var form = layui.form,
+                table = layui.table;
+            table.render({
+                elem: '#LAY_table_user',
+                url: "/banners/searchalldeletedbanner",
+                cols: [[
+                    {
+                        field: 'picture', title: '主图', align: "left", sort: false, minWidth: 300,
+                        templet: function (d) {
+                            var strhtml = '<div ><img style="width: 300px;height:300px;" src="/' + d.picture + '"></div>';
+                            return strhtml;
+                        }
+                    },
+                    {
+                        field: 'link',
+                        title: '链接',
+                        minWidth: 250,
+                        templet: function (d) {
+                            return "<a  href='" + d.link + "'  target='_blank' > " + d.link + "</a>";
+                        }
+                    },
+                    {
+                        field: 'title',
+                        title: '标题',
+                        minWidth: 300,
+                    },
+                    {
+                        field: 'sort',
+                        title: '排序',
+                        align: 'center',
+                        minWidth: 200,
+                    },
+                    {
+                        field: 'status',
+                        title: '状态',
+                        align: 'center',
+                        minWidth: 200,
+                        templet: function (e) {
+                            if (e.status == 0) {
+                                return "隐藏";
+                            } else {
+                                return "显示";
+                            }
+
+                        }
+                    },
+                    {
+                        title: '操作', align: "center", templet: '#editTableBarEdit'
+                    }
+                ]
+                ],
+                response: {
+                    statusName: 'erroCode' //规定数据状态的字段名称，默认：code
+                    , statusCode: 200 //规定成功的状态码，默认：0
+                    , msgName: 'errorMessage' //规定状态信息的字段名称，默认：msg
+                    , countName: 'dataSum' //规定数据总数的字段名称，默认：count
+                    , dataName: 'backData' //规定数据列表的字段名称，默认：data
+                },
+                id: "idTest",
+                height: screen()[0].height,
+                page: true,
+                limit: 10,
+                limits: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+            });
+
+            table.on('tool(LAY_table_user)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+                if (layEvent === 'del') { //删除
+                    layer.confirm('确定移除行么？', function (index) {
+                        $.ajax({
+                            url: '/banners/realdeletebanner',
+                            type: "POST",
+                            dataType: "json",
+                            data: {"id": data.id},
+                            success: function (succdata) {
+                                debugger;
+                                var erroCode = succdata.erroCode;
+                                var errorMessage = succdata.errorMessage;
+                                layer.msg(errorMessage);
+                                if (erroCode == 200) {
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                }
+                                layer.close(index);
+                            },
+                            error: function (errdata) {
+                                console.log(errdata);
+                            }
+                        });
+                    });
+                } else if (layEvent === 'reback') { //还原
+                    layer.confirm('确定还原吗？', function (index) {
+                        $.ajax({
+                            url: '/banners/logicdeletebannerreject',
+                            type: "POST",
+                            dataType: "json",
+                            data: {"id": data.id},
+                            success: function (succdata) {
+                                debugger;
+                                var erroCode = succdata.erroCode;
+                                var errorMessage = succdata.errorMessage;
+                                layer.msg(errorMessage);
+                                if (erroCode == 200) {
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                }
+                                layer.close(index);
+                            },
+                            error: function (errdata) {
+                                console.log(errdata);
+                            }
+                        });
+                    });
+                }
+            });
+
+        });
+    }
+
+</script>
+</body>
+</html>

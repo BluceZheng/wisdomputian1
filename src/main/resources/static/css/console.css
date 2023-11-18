@@ -1,0 +1,155 @@
+html {
+    background-color: rgb(255, 255, 255);
+    color: #666;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+
+    padding: .375rem .75rem;
+    line-height: 1.5;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    font-size:15px;
+    color:#919191;
+    outline: none;
+}
+.row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+.col-lg-3 {
+    -ms-flex: 0 0 19%;
+    flex: 0 0 19%;
+    max-width: 19%;
+}
+.col-lg {
+    -ms-flex: 0 0 1%;
+    flex: 0 0 1%;
+    max-width: 1%;
+}
+.Gradients1 {
+    /*background-image: linear-gradient(to bottom right, #ec6aeb, #9d60f8);*/
+    background-image: url("../images/q1.png");
+    border-radius: 0.25em;
+    background-size:100% 100%;
+}
+
+.Gradients2 {
+    background-image: url("../images/q2.png");
+    border-radius: 0.25em;
+    background-size:100% 100%;
+}
+
+.Gradients3 {
+    background-image: url("../images/q3.png");
+    border-radius: 0.25em;
+    background-size:100% 100%;
+}
+
+.Gradients4 {
+    background-image: url("../images/q4.png");
+    border-radius: 0.25em;
+    background-size:100% 100%;
+}
+.Gradients5 {
+    background:rgba(58,208,192,1);
+    border-radius: 0.25em;
+    background-size:100% 100%;
+    height:100px;
+}
+
+
+.layui-card-header {
+    position: relative;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 15px;
+    border-bottom: 0;
+    color: #333;
+    border-radius: 2px 2px 0 0;
+    font-size: 14px;
+}
+
+.money_cont {
+    overflow: hidden;
+    height: 298px;
+}
+
+.money_cont div {
+    width: 44%;
+}
+
+.money_cont_left {
+    float: left;
+}
+
+.money_cont_line {
+    display: block;
+    width: 100% !important;
+    margin: 15px 0;
+    height: 39px;
+    line-height: 39px;
+    overflow: hidden;
+}
+
+.money_cont_left .span_o {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(51, 51, 51, 1);
+    margin-left: 9%;
+}
+
+.money_cont_right {
+    float: right;
+    position: relative;
+}
+
+.span_t {
+    display: inline-block;
+    font-size: 20px;
+    font-family: PingFang-SC-Bold;
+    font-weight: 500;
+    color: rgba(104,144,254,1);
+    width: 120px;
+    text-align: left;
+    float: right;
+}
+
+.money_cont_right .span_o {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(51, 51, 51, 1);
+    margin-left: 9%;
+}
+.diyimg{
+    height: 36px;
+    width: 39px;
+}
+.traffic-table1 p {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgba(104, 144, 254, 1);
+    text-align: center;
+}
+.diyBtn{
+    height: 95px;
+    width: 95px;
+}
+.diyicon{
+    font-size: 30px;
+    color: #4AE1ED;
+}
+.diycard{
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
